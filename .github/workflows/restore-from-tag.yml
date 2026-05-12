@@ -80,6 +80,9 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Install Python dependencies
+        run: python3 -m pip install --user gitingest
+
       - name: Install dependencies
         run: |
           npm ci
