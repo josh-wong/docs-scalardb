@@ -14,14 +14,14 @@ const config = {
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
-  url: 'https://scalardb.scalar-labs.com',
+  url: 'https://scalardb.080f53.com',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: '/',
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'scalar-labs', // Usually your GitHub org/user name.
+  organizationName: 'josh-wong', // Usually your GitHub org/user name.
   projectName: 'docs-scalardb', // Usually your repo name.
 
   onBrokenLinks: 'warn',
@@ -61,7 +61,7 @@ const config = {
           breadcrumbs: true,
           sidebarPath: './sidebars.js',
           // Remove this to remove the "edit this page" links.
-          editUrl: 'https://github.com/scalar-labs/docs-scalardb/edit/main',
+          editUrl: 'https://github.com/josh-wong/docs-scalardb/edit/main',
           editLocalizedFiles: true, // This allows for the "Edit this page" button to direct users to edit the localized version of the page on GitHub.
           lastVersion: 'current',
             versions: {
