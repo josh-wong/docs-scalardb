@@ -88,24 +88,24 @@ jobs:
           tag_description="${{ github.event.inputs.tag_description }}"
           timestamp=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
           commit_sha=$(git rev-parse HEAD)
-          
+
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git config user.name "github-actions[bot]"
-          
+
           # Create annotated tag with metadata
           if [ -z "$tag_description" ]; then
             tag_msg="Restoration tag created on $timestamp"
           else
             tag_msg="$tag_description | Created on $timestamp"
           fi
-          
+
           git tag -a "$tag_name" -m "$tag_msg"
-          
+
           echo "success=true" >> $GITHUB_OUTPUT
           echo "tag_name=$tag_name" >> $GITHUB_OUTPUT
           echo "timestamp=$timestamp" >> $GITHUB_OUTPUT
           echo "commit_sha=$commit_sha" >> $GITHUB_OUTPUT
-          
+
           echo "✓ Tag created: $tag_name"
           echo "  Message: $tag_msg"
           echo "  Commit: $commit_sha"

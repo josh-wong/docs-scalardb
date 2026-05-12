@@ -33,27 +33,27 @@ jobs:
         run: |
           # Handle the choice input - when selected from dropdown, comes as-is
           tag_name="${{ github.event.inputs.tag_name }}"
-          
+
           # Remove "Loading tags..." placeholder if it exists
           if [ "$tag_name" = "Loading tags..." ]; then
             echo "Error: No tag selected. Please select a restoration tag."
             exit 1
           fi
-          
+
           # Verify tag exists
           if ! git rev-parse "refs/tags/$tag_name" >/dev/null 2>&1; then
             echo "Error: Tag '$tag_name' does not exist"
             exit 1
           fi
-          
+
           # Get tag metadata
           tag_date=$(git tag -l --format='%(creatordate)' "$tag_name")
           previous_head=$(git rev-parse HEAD)
-          
+
           echo "tag_name=$tag_name" >> $GITHUB_OUTPUT
           echo "tag_date=$tag_date" >> $GITHUB_OUTPUT
           echo "previous_head=$previous_head" >> $GITHUB_OUTPUT
-          
+
           echo "✓ Tag validated: $tag_name"
           echo "  Date: $tag_date"
 
@@ -104,24 +104,24 @@ jobs:
           # Get list of changes between tag and previous HEAD
           previous_head="${{ needs.prepare-restore.outputs.previous_head }}"
           current_tag="${{ needs.prepare-restore.outputs.tag_name }}"
-          
+
           # Generate change summary
           changes_summary="change-tracking-$(date +%s).md"
-          
+
           cat > "$changes_summary" << 'EOF'
           # Change Tracking Report
-          
+
           EOF
-          
+
           echo "Generated on: $(date -u)" >> "$changes_summary"
           echo "Restoration Tag: $current_tag" >> "$changes_summary"
           echo "Previous HEAD: $previous_head" >> "$changes_summary"
           echo "" >> "$changes_summary"
-          
+
           # Get file changes
           echo "## Files Changed Since Tag" >> "$changes_summary"
           echo "" >> "$changes_summary"
-          
+
           # Added files
           added=$(git diff "$current_tag" "$previous_head" --diff-filter=A --name-only 2>/dev/null | wc -l)
           if [ "$added" -gt 0 ]; then
@@ -129,7 +129,7 @@ jobs:
             git diff "$current_tag" "$previous_head" --diff-filter=A --name-only 2>/dev/null | sed 's/^/- /' >> "$changes_summary"
             echo "" >> "$changes_summary"
           fi
-          
+
           # Modified files
           modified=$(git diff "$current_tag" "$previous_head" --diff-filter=M --name-only 2>/dev/null | wc -l)
           if [ "$modified" -gt 0 ]; then
@@ -137,7 +137,7 @@ jobs:
             git diff "$current_tag" "$previous_head" --diff-filter=M --name-only 2>/dev/null | sed 's/^/- /' >> "$changes_summary"
             echo "" >> "$changes_summary"
           fi
-          
+
           # Deleted files
           deleted=$(git diff "$current_tag" "$previous_head" --diff-filter=D --name-only 2>/dev/null | wc -l)
           if [ "$deleted" -gt 0 ]; then
@@ -145,7 +145,7 @@ jobs:
             git diff "$current_tag" "$previous_head" --diff-filter=D --name-only 2>/dev/null | sed 's/^/- /' >> "$changes_summary"
             echo "" >> "$changes_summary"
           fi
-          
+
           total_changes=$((added + modified + deleted))
           echo "## Summary" >> "$changes_summary"
           echo "Total changes: $total_changes" >> "$changes_summary"
@@ -168,9 +168,9 @@ jobs:
           echo "\`\`\`bash" >> "$changes_summary"
           echo "git merge <fixed-branch>" >> "$changes_summary"
           echo "\`\`\`" >> "$changes_summary"
-          
+
           mv "$changes_summary" build/
-          
+
           echo "changes_count=$total_changes" >> $GITHUB_OUTPUT
           echo "✓ Change tracking complete: $total_changes changes identified"
 
