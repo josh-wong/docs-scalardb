@@ -199,11 +199,12 @@ jobs:
           echo "timestamp=$timestamp" >> $GITHUB_OUTPUT
 
   post-restoration:
-    needs: restore-and-deploy
+    needs: [prepare-restore, restore-and-deploy]
     runs-on: ubuntu-latest
     if: always()
     steps:
       - name: Output restoration details
+        if: needs.prepare-restore.result == 'success' && needs.restore-and-deploy.result == 'success'
         run: |
           echo "## Site Restoration Complete" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -235,7 +236,7 @@ jobs:
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
 
       - name: Failure notification
-        if: failure()
+        if: needs.prepare-restore.result != 'success' || needs.restore-and-deploy.result != 'success'
         run: |
           echo "## Restoration Failed" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -243,8 +244,9 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Troubleshooting:" >> $GITHUB_STEP_SUMMARY
           echo "1. Check workflow logs for specific error messages" >> $GITHUB_STEP_SUMMARY
-          echo "2. Verify tag \`${{ needs.restore-and-deploy.outputs.restored_tag }}\` exists and is valid" >> $GITHUB_STEP_SUMMARY
+          echo "2. Verify tag \`${{ github.event.inputs.tag_name }}\` exists and is valid" >> $GITHUB_STEP_SUMMARY
           echo "3. Verify tag points to a working commit that builds successfully" >> $GITHUB_STEP_SUMMARY
           echo "4. Try restoring from an earlier tag if current tag build is broken" >> $GITHUB_STEP_SUMMARY
           echo "5. Check GitHub Pages deployment settings" >> $GITHUB_STEP_SUMMARY
           echo "6. Review build logs for dependency or build errors" >> $GITHUB_STEP_SUMMARY
+          exit 1
