@@ -175,7 +175,7 @@ jobs:
           echo "✓ Change tracking complete: $total_changes changes identified"
 
       - name: Upload build artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.5.0
         with:
           name: site-build
           path: build/
