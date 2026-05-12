@@ -4,11 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       tag_name:
-        description: 'Select restoration tag'
+        description: 'Select restore point tag (e.g., restore-point-YYYY-MM-DD-HHMM)'
         required: true
-        type: choice
-        options:
-          - 'Loading tags...'
+        type: string
 
 permissions:
   contents: read
