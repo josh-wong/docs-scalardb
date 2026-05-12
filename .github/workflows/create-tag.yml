@@ -69,6 +69,10 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Install Python dependencies
+        if: ${{ github.event.inputs.should_validate == 'true' }}
+        run: python3 -m pip install --user gitingest
+
       - name: Validate build
         if: ${{ github.event.inputs.should_validate == 'true' }}
         run: |
