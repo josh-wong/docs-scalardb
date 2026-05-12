@@ -1,4 +1,4 @@
-name: Create Restoration Tag
+name: Create restoration tag
 
 on:
   workflow_dispatch:

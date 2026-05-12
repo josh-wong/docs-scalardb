@@ -1,4 +1,4 @@
-name: Restore Site from Tag
+name: Restore site from tag
 
 on:
   workflow_dispatch:
