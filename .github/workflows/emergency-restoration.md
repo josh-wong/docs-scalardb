@@ -50,7 +50,7 @@ Use the restoration system when:
    - Button appears in the main area when workflow is selected
 
 4. **Select a restoration tag**
-   - Choose the most recent `restore-*` tag from the dropdown
+   - Choose the most recent `restore-point-*` tag from the dropdown
    - If unsure, select the tag with the most recent date
 
 5. **Monitor the restoration**
@@ -67,12 +67,12 @@ Use the restoration system when:
 All restoration tags follow this format:
 
 ```
-restore-YYYY-MM-DD-HH-MM
+restore-point-YYYY-MM-DD-HHMM
 ```
 
 ### Components
 
-- `restore-` — Prefix identifying this as a restoration tag
+- `restore-point-` — Prefix identifying this as a restoration tag
 - `YYYY` — Year (4 digits)
 - `MM` — Month (2 digits, 01-12)
 - `DD` — Day (2 digits, 01-31)
@@ -81,9 +81,9 @@ restore-YYYY-MM-DD-HH-MM
 
 ### Examples
 
-- `restore-2026-04-27-14-30` — April 27, 2026 at 14:30 UTC
-- `restore-2026-04-20-09-15` — April 20, 2026 at 09:15 UTC
-- `restore-2026-05-01-00-00` — May 1, 2026 at midnight UTC
+- `restore-point-2026-04-27-1430` — April 27, 2026 at 14:30 UTC
+- `restore-point-2026-04-20-0915` — April 20, 2026 at 09:15 UTC
+- `restore-point-2026-05-01-0000` — May 1, 2026 at midnight UTC
 
 ### When Tags Are Created
 
@@ -189,8 +189,8 @@ Total changes: 15
 
 **Steps**:
 ```bash
-# List commits since restoration tag
-git log restore-2026-04-20-09-15..origin/main --oneline
+# List commits since restore-point tag
+git log restore-point-2026-04-20-0915..origin/main --oneline
 
 # Copy the commit SHA you want
 # Example: a1b2c3d Fix documentation formatting
@@ -208,8 +208,8 @@ git cherry-pick --continue
 
 **Steps**:
 ```bash
-# Start interactive rebase from restoration tag
-git rebase -i restore-2026-04-20-09-15
+# Start interactive rebase from restore-point tag
+git rebase -i restore-point-2026-04-20-0915
 
 # A text editor will open showing commits
 # Keep "pick" for commits you want to re-apply
@@ -415,13 +415,13 @@ git cherry-pick --abort
 
 ```bash
 # Generate full diff between tag and current state
-git diff restore-2026-04-20-09-15..origin/main > changes.diff
+git diff restore-point-2026-04-20-0915..origin/main > changes.diff
 
 # View file-by-file changes
-git diff --stat restore-2026-04-20-09-15..origin/main
+git diff --stat restore-point-2026-04-20-0915..origin/main
 
 # List only file names
-git diff --name-only restore-2026-04-20-09-15..origin/main
+git diff --name-only restore-point-2026-04-20-0915..origin/main
 ```
 
 ---
@@ -489,7 +489,7 @@ git diff --name-only restore-2026-04-20-09-15..origin/main
 **Situation**: Site was working 3 days ago but broke today. Multiple changes were made between then.
 
 **Steps**:
-1. **Restore to 3-day-old tag** - Use tag from that date (e.g., `restore-2026-04-24-09-00`)
+1. **Restore to 3-day-old tag** - Use tag from that date (e.g., `restore-point-2026-04-24-0900`)
 2. **Review change tracking report** - Identify all 25 changes made since then
 3. **Select subset to re-apply** - Start with most critical changes
    ```bash
@@ -513,7 +513,7 @@ git diff --name-only restore-2026-04-20-09-15..origin/main
 3. **Manually copy or merge** - Copy the restored file content
 4. **Create new commit** - Re-add the file with proper changes
    ```bash
-   git checkout restore-2026-04-26-09-00 -- docs/important-file.md
+   git checkout restore-point-2026-04-26-0900 -- docs/important-file.md
    git add docs/important-file.md
    git commit -m "Restore accidentally deleted file"
    ```
@@ -537,7 +537,7 @@ git diff --name-only restore-2026-04-20-09-15..origin/main
   ```
   🔄 Site Restoration [Status]
   Repository: docs-archive
-  Tag restored: restore-2026-04-27-14-30
+  Tag restored: `restore-point-2026-04-27-1430`
   Issue: [Brief description]
   Status: Restoration complete / In progress / Failed
   ```
@@ -576,27 +576,27 @@ git diff --name-only restore-2026-04-20-09-15..origin/main
 ### Useful Git Commands
 
 ```bash
-# List all restoration tags
-git tag -l 'restore-*' --sort=-version:refname
+# List all restore-point tags
+git tag -l 'restore-point-*' --sort=-version:refname
 
 # Show tag details
-git show restore-2026-04-27-14-30
+git show restore-point-2026-04-27-1430
 
 # View commits since a tag
-git log restore-2026-04-27-14-30..main --oneline
+git log restore-point-2026-04-27-1430..main --oneline
 
 # Diff between tag and current
-git diff restore-2026-04-27-14-30 -- docs/
+git diff restore-point-2026-04-27-1430 -- docs/
 
 # Create a local branch from a tag (for testing)
-git checkout -b test-branch restore-2026-04-27-14-30
+git checkout -b test-branch restore-point-2026-04-27-1430
 ```
 
 ### Common Commands Quick Reference
 
 | Task | Command |
 |------|---------|
-| List restoration tags | `git tag -l 'restore-*'` |
+| List restore-point tags | `git tag -l 'restore-point-*'` |
 | Cherry-pick a commit | `git cherry-pick <sha>` |
 | Start interactive rebase | `git rebase -i <tag>` |
 | Continue after conflict | `git cherry-pick --continue` |

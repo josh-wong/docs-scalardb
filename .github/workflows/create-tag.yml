@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       tag_name:
-        description: 'Tag name (format: restore-YYYY-MM-DD-HH-MM)'
+        description: 'Tag name (format: restore-point-YYYY-MM-DD-HHMM)'
         required: true
         type: string
       tag_description:
@@ -47,8 +47,8 @@ jobs:
       - name: Validate tag name format
         run: |
           tag_name="${{ github.event.inputs.tag_name }}"
-          if ! [[ $tag_name =~ ^restore-[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{2}-[0-9]{2}$ ]]; then
-            echo "Error: Tag name must follow format 'restore-YYYY-MM-DD-HH-MM'"
+          if ! [[ $tag_name =~ ^restore-point-[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{2}[0-9]{2}$ ]]; then
+            echo "Error: Tag name must follow format 'restore-point-YYYY-MM-DD-HHMM'"
             echo "Provided: $tag_name"
             exit 1
           fi
@@ -137,7 +137,7 @@ jobs:
           echo "❌ **Tag creation did not complete successfully**" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Troubleshooting:" >> $GITHUB_STEP_SUMMARY
-          echo "1. Verify tag name follows format: \`restore-YYYY-MM-DD-HH-MM\`" >> $GITHUB_STEP_SUMMARY
+          echo "1. Verify tag name follows format: \`restore-point-YYYY-MM-DD-HHMM\`" >> $GITHUB_STEP_SUMMARY
           echo "2. Ensure tag does not already exist" >> $GITHUB_STEP_SUMMARY
           echo "3. Check that workflow is running on \`main\` branch" >> $GITHUB_STEP_SUMMARY
           echo "4. If build validation failed, review build logs" >> $GITHUB_STEP_SUMMARY
