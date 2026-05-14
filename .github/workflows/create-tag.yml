@@ -34,7 +34,7 @@ jobs:
       commit_sha: ${{ steps.create-tag-step.outputs.commit_sha }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -69,7 +69,7 @@ jobs:
 
       - name: Setup Node.js
         if: ${{ github.event.inputs.should_validate == 'true' }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '20'
 

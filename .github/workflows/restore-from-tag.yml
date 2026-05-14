@@ -26,7 +26,7 @@ jobs:
       previous_head: ${{ steps.resolve-tag.outputs.previous_head }}
     steps:
       - name: Checkout main branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -63,7 +63,7 @@ jobs:
       changes_count: ${{ steps.track-changes.outputs.changes_count }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -73,7 +73,7 @@ jobs:
           echo "✓ Checked out tag: ${{ needs.prepare-restore.outputs.tag_name }}"
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '20'
 
@@ -173,7 +173,7 @@ jobs:
           echo "✓ Change tracking complete: $total_changes changes identified"
 
       - name: Upload build artifact
-        uses: actions/upload-artifact@v4.5.0
+        uses: actions/upload-artifact@v7
         with:
           name: site-build
           path: build/
@@ -182,13 +182,13 @@ jobs:
 
       - name: Deploy to GitHub Pages
         id: deploy
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: build/
 
       - name: Publish to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
         with:
           artifact_name: github-pages
 
