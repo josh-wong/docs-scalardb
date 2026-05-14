@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       tag_name:
-        description: 'Select restore point tag (e.g., restore-point-YYYY-MM-DD-HHMM)'
+        description: 'Specify a restore point tag (e.g., restore-point-YYYY-MM-DD-HHMM)'
         required: true
         type: string
 
