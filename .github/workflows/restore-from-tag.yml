@@ -13,6 +13,10 @@ permissions:
   pages: write
   id-token: write
 
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
 jobs:
   prepare-restore:
     runs-on: ubuntu-latest
@@ -29,14 +33,7 @@ jobs:
       - name: Resolve tag input
         id: resolve-tag
         run: |
-          # Handle the choice input - when selected from dropdown, comes as-is
           tag_name="${{ github.event.inputs.tag_name }}"
-
-          # Remove "Loading tags..." placeholder if it exists
-          if [ "$tag_name" = "Loading tags..." ]; then
-            echo "Error: No tag selected. Please select a restoration tag."
-            exit 1
-          fi
 
           # Verify tag exists
           if ! git rev-parse "refs/tags/$tag_name" >/dev/null 2>&1; then
@@ -233,8 +230,8 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
           echo "🔄 **Site Restoration Complete**" >> $GITHUB_STEP_SUMMARY
-          echo "Restored from tag: ${{ needs.restore-and-deploy.outputs.restored_tag }}" >> $GITHUB_STEP_SUMMARY
-          echo "Changes reverted: ${{ needs.restore-and-deploy.outputs.changes_count }}" >> $GITHUB_STEP_SUMMARY
+          echo "Restored from tag: ${{ needs.restore-and-deploy.outputs.restored_tag }}"
+          echo "Changes reverted: ${{ needs.restore-and-deploy.outputs.changes_count }}"
           echo "Time to restore: < 15 minutes" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
 

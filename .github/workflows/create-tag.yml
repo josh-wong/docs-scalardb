@@ -20,6 +20,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: create-tag
+  cancel-in-progress: false
+
 jobs:
   create-tag:
     runs-on: ubuntu-latest
