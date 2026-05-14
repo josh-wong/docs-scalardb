@@ -125,13 +125,13 @@ jobs:
 
       - name: Output summary
         run: |
-          echo "## Tag Creation Summary" >> $GITHUB_STEP_SUMMARY
+          echo "## Tag creation summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "✓ **Tag Created Successfully**" >> $GITHUB_STEP_SUMMARY
+          echo "✓ **Tag created successfully**" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Property | Value |" >> $GITHUB_STEP_SUMMARY
           echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
-          echo "| Tag Name | \`${{ steps.create-tag-step.outputs.tag_name }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Tag name | \`${{ steps.create-tag-step.outputs.tag_name }}\` |" >> $GITHUB_STEP_SUMMARY
           echo "| Commit SHA | \`${{ steps.create-tag-step.outputs.commit_sha }}\` |" >> $GITHUB_STEP_SUMMARY
           echo "| Created | ${{ steps.create-tag-step.outputs.timestamp }} |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -140,13 +140,14 @@ jobs:
       - name: Error handling
         if: failure()
         run: |
-          echo "## Tag Creation Failed" >> $GITHUB_STEP_SUMMARY
+          echo "## Tag creation failed" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "❌ **Tag creation did not complete successfully**" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Troubleshooting:" >> $GITHUB_STEP_SUMMARY
-          echo "1. Verify tag name follows format: \`restore-point-YYYY-MM-DD-HHMM\`" >> $GITHUB_STEP_SUMMARY
-          echo "2. Ensure tag does not already exist" >> $GITHUB_STEP_SUMMARY
-          echo "3. Check that workflow is running on \`main\` branch" >> $GITHUB_STEP_SUMMARY
-          echo "4. If build validation failed, review build logs" >> $GITHUB_STEP_SUMMARY
-          echo "5. Check GitHub Actions permissions allow \`contents: write\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "1. Verify that the tag name follows this format: \`restore-point-YYYY-MM-DD-HHMM\`" >> $GITHUB_STEP_SUMMARY
+          echo "2. Ensure that the tag does not already exist" >> $GITHUB_STEP_SUMMARY
+          echo "3. Check that the workflow is running on the \`main\` branch" >> $GITHUB_STEP_SUMMARY
+          echo "4. If build validation failed, review the build logs" >> $GITHUB_STEP_SUMMARY
+          echo "5. Check that the GitHub Actions permissions allow \`contents: write\`" >> $GITHUB_STEP_SUMMARY

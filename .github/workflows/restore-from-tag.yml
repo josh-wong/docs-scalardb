@@ -112,18 +112,21 @@ jobs:
           EOF
 
           echo "Generated on: $(date -u)" >> "$changes_summary"
-          echo "Restoration Tag: $current_tag" >> "$changes_summary"
+          echo "Restoration tag: $current_tag" >> "$changes_summary"
           echo "Previous HEAD: $previous_head" >> "$changes_summary"
           echo "" >> "$changes_summary"
 
           # Get file changes
-          echo "## Files Changed Since Tag" >> "$changes_summary"
+          echo "## Files changed since tag" >> "$changes_summary"
+          echo "" >> "$changes_summary"
+          echo "Below is a list of files that have changed since the specified tag." >> "$changes_summary"
           echo "" >> "$changes_summary"
 
           # Added files
           added=$(git diff "$current_tag" "$previous_head" --diff-filter=A --name-only 2>/dev/null | wc -l)
           if [ "$added" -gt 0 ]; then
             echo "### Added ($added files)" >> "$changes_summary"
+            echo "" >> "$changes_summary"
             git diff "$current_tag" "$previous_head" --diff-filter=A --name-only 2>/dev/null | sed 's/^/- /' >> "$changes_summary"
             echo "" >> "$changes_summary"
           fi
@@ -132,6 +135,7 @@ jobs:
           modified=$(git diff "$current_tag" "$previous_head" --diff-filter=M --name-only 2>/dev/null | wc -l)
           if [ "$modified" -gt 0 ]; then
             echo "### Modified ($modified files)" >> "$changes_summary"
+            echo "" >> "$changes_summary"
             git diff "$current_tag" "$previous_head" --diff-filter=M --name-only 2>/dev/null | sed 's/^/- /' >> "$changes_summary"
             echo "" >> "$changes_summary"
           fi
@@ -146,25 +150,29 @@ jobs:
 
           total_changes=$((added + modified + deleted))
           echo "## Summary" >> "$changes_summary"
+          echo "" >> "$changes_summary"
           echo "Total changes: $total_changes" >> "$changes_summary"
           echo "" >> "$changes_summary"
-          echo "## To Re-apply Changes" >> "$changes_summary"
+          echo "## To re-apply changes" >> "$changes_summary"
           echo "" >> "$changes_summary"
           echo "After addressing the underlying issue, use one of these methods to re-apply changes:" >> "$changes_summary"
           echo "" >> "$changes_summary"
           echo "### Method 1: Cherry-pick specific commits" >> "$changes_summary"
+          echo "" >> "$changes_summary"
           echo "\`\`\`bash" >> "$changes_summary"
-          echo "git cherry-pick <commit-sha>" >> "$changes_summary"
+          echo "git cherry-pick <COMMIT_SHA>" >> "$changes_summary"
           echo "\`\`\`" >> "$changes_summary"
           echo "" >> "$changes_summary"
           echo "### Method 2: Interactive rebase" >> "$changes_summary"
+          echo "" >> "$changes_summary"
           echo "\`\`\`bash" >> "$changes_summary"
           echo "git rebase -i $current_tag" >> "$changes_summary"
           echo "\`\`\`" >> "$changes_summary"
           echo "" >> "$changes_summary"
           echo "### Method 3: Merge fixed branch" >> "$changes_summary"
+          echo "" >> "$changes_summary"
           echo "\`\`\`bash" >> "$changes_summary"
-          echo "git merge <fixed-branch>" >> "$changes_summary"
+          echo "git merge <FIXED_BRANCH>" >> "$changes_summary"
           echo "\`\`\`" >> "$changes_summary"
 
           mv "$changes_summary" build/
@@ -206,30 +214,30 @@ jobs:
       - name: Output restoration details
         if: needs.prepare-restore.result == 'success' && needs.restore-and-deploy.result == 'success'
         run: |
-          echo "## Site Restoration Complete" >> $GITHUB_STEP_SUMMARY
+          echo "## Site restoration complete" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "✓ **Restoration Successful**" >> $GITHUB_STEP_SUMMARY
+          echo "✓ **Restoration successful**" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Property | Value |" >> $GITHUB_STEP_SUMMARY
           echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
-          echo "| Restored Tag | \`${{ needs.restore-and-deploy.outputs.restored_tag }}\` |" >> $GITHUB_STEP_SUMMARY
-          echo "| Restoration Time | ${{ needs.restore-and-deploy.outputs.restored_timestamp }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Changes Reverted | ${{ needs.restore-and-deploy.outputs.changes_count }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Restored tag | \`${{ needs.restore-and-deploy.outputs.restored_tag }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Restoration time | ${{ needs.restore-and-deploy.outputs.restored_timestamp }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Changes reverted | ${{ needs.restore-and-deploy.outputs.changes_count }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Previous HEAD | \`${{ needs.restore-and-deploy.outputs.previous_head }}\` |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Next Steps" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "1. **Verify site is accessible**: Visit the deployed site to confirm functionality" >> $GITHUB_STEP_SUMMARY
-          echo "2. **Download change report**: Artifacts → \`site-build\` → \`change-tracking-*.md\`" >> $GITHUB_STEP_SUMMARY
-          echo "3. **Identify root cause**: Investigate what caused the site issue" >> $GITHUB_STEP_SUMMARY
-          echo "4. **Fix the issue**: Apply corrections to main branch" >> $GITHUB_STEP_SUMMARY
-          echo "5. **Re-apply changes**: Use cherry-pick or rebase to re-apply the ${{ needs.restore-and-deploy.outputs.changes_count }} reverted changes" >> $GITHUB_STEP_SUMMARY
-          echo "6. **Announce restoration**: Post message to #eng-documentation-feedback" >> $GITHUB_STEP_SUMMARY
+          echo "1. **Verify site is accessible:** Visit the deployed site to confirm functionality" >> $GITHUB_STEP_SUMMARY
+          echo "2. **Download change report:** Artifacts → \`site-build\` → \`change-tracking-*.md\`" >> $GITHUB_STEP_SUMMARY
+          echo "3. **Identify root cause:** Investigate what caused the site issue" >> $GITHUB_STEP_SUMMARY
+          echo "4. **Fix the issue:** Apply corrections to main branch" >> $GITHUB_STEP_SUMMARY
+          echo "5. **Re-apply changes:** Use cherry-pick or rebase to re-apply the ${{ needs.restore-and-deploy.outputs.changes_count }} reverted changes" >> $GITHUB_STEP_SUMMARY
+          echo "6. **Announce restoration:** Post message to #eng-documentation-feedback" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Announcement Template" >> $GITHUB_STEP_SUMMARY
+          echo "### Announcement template" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-          echo "🔄 **Site Restoration Complete**" >> $GITHUB_STEP_SUMMARY
+          echo "🔄 **Site restoration complete**" >> $GITHUB_STEP_SUMMARY
           echo "Restored from tag: ${{ needs.restore-and-deploy.outputs.restored_tag }}"
           echo "Changes reverted: ${{ needs.restore-and-deploy.outputs.changes_count }}"
           echo "Time to restore: < 15 minutes" >> $GITHUB_STEP_SUMMARY
