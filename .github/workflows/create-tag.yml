@@ -40,17 +40,18 @@ jobs:
 
       - name: Validate branch
         run: |
-          current_branch=$(git rev-parse --abbrev-ref HEAD)
-          if [ "$current_branch" != "main" ]; then
+          if [ "$GITHUB_REF_NAME" != "main" ]; then
             echo "Error: This workflow must run on the main branch"
-            echo "Current branch: $current_branch"
+            echo "Current branch: $GITHUB_REF_NAME"
             exit 1
           fi
           echo "✓ Workflow running on main branch"
 
       - name: Validate tag name format
+        env:
+          TAG_NAME: ${{ github.event.inputs.tag_name }}
         run: |
-          tag_name="${{ github.event.inputs.tag_name }}"
+          tag_name="$TAG_NAME"
           if ! [[ $tag_name =~ ^[0-9]{8}$ ]]; then
             echo "Error: Tag name must follow format 'YYYYMMDD'"
             echo "Provided: $tag_name"
@@ -59,8 +60,10 @@ jobs:
           echo "✓ Tag name format is valid: $tag_name"
 
       - name: Check if tag already exists
+        env:
+          TAG_NAME: ${{ github.event.inputs.tag_name }}
         run: |
-          tag_name="${{ github.event.inputs.tag_name }}"
+          tag_name="$TAG_NAME"
           if git rev-parse "refs/tags/$tag_name" >/dev/null 2>&1; then
             echo "Error: Tag '$tag_name' already exists"
             exit 1
@@ -91,9 +94,12 @@ jobs:
 
       - name: Create tag
         id: create-tag-step
+        env:
+          TAG_NAME: ${{ github.event.inputs.tag_name }}
+          TAG_DESCRIPTION: ${{ github.event.inputs.tag_description }}
         run: |
-          tag_name="${{ github.event.inputs.tag_name }}"
-          tag_description="${{ github.event.inputs.tag_description }}"
+          tag_name="$TAG_NAME"
+          tag_description="$TAG_DESCRIPTION"
           timestamp=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
           commit_sha=$(git rev-parse HEAD)
 

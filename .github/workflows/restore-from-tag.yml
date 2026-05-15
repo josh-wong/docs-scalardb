@@ -23,17 +23,20 @@ jobs:
     outputs:
       tag_name: ${{ steps.resolve-tag.outputs.tag_name }}
       tag_date: ${{ steps.resolve-tag.outputs.tag_date }}
-      previous_head: ${{ steps.resolve-tag.outputs.previous_head }}
+      main_head_sha: ${{ steps.resolve-tag.outputs.main_head_sha }}
     steps:
       - name: Checkout main branch
         uses: actions/checkout@v6
         with:
+          ref: main
           fetch-depth: 0
 
       - name: Resolve tag input
         id: resolve-tag
+        env:
+          TAG_NAME: ${{ github.event.inputs.tag_name }}
         run: |
-          tag_name="${{ github.event.inputs.tag_name }}"
+          tag_name="$TAG_NAME"
 
           # Verify tag exists
           if ! git rev-parse "refs/tags/$tag_name" >/dev/null 2>&1; then
@@ -43,11 +46,11 @@ jobs:
 
           # Get tag metadata
           tag_date=$(git tag -l --format='%(creatordate)' "$tag_name")
-          previous_head=$(git rev-parse HEAD)
+          main_head_sha=$(git rev-parse HEAD)
 
           echo "tag_name=$tag_name" >> $GITHUB_OUTPUT
           echo "tag_date=$tag_date" >> $GITHUB_OUTPUT
-          echo "previous_head=$previous_head" >> $GITHUB_OUTPUT
+          echo "main_head_sha=$main_head_sha" >> $GITHUB_OUTPUT
 
           echo "✓ Tag validated: $tag_name"
           echo "  Date: $tag_date"
@@ -55,11 +58,14 @@ jobs:
   restore-and-deploy:
     needs: prepare-restore
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     outputs:
       restoration_success: ${{ steps.restoration-summary.outputs.success }}
       restored_tag: ${{ needs.prepare-restore.outputs.tag_name }}
       restored_timestamp: ${{ steps.restoration-summary.outputs.timestamp }}
-      previous_head: ${{ needs.prepare-restore.outputs.previous_head }}
+      main_head_sha: ${{ needs.prepare-restore.outputs.main_head_sha }}
       changes_count: ${{ steps.track-changes.outputs.changes_count }}
     steps:
       - name: Checkout repository
@@ -68,9 +74,11 @@ jobs:
           fetch-depth: 0
 
       - name: Checkout specified tag
+        env:
+          TAG_NAME: ${{ needs.prepare-restore.outputs.tag_name }}
         run: |
-          git checkout "${{ needs.prepare-restore.outputs.tag_name }}"
-          echo "✓ Checked out tag: ${{ needs.prepare-restore.outputs.tag_name }}"
+          git checkout "$TAG_NAME"
+          echo "✓ Checked out tag: $TAG_NAME"
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -98,10 +106,13 @@ jobs:
 
       - name: Track changes
         id: track-changes
+        env:
+          MAIN_HEAD_SHA: ${{ needs.prepare-restore.outputs.main_head_sha }}
+          CURRENT_TAG: ${{ needs.prepare-restore.outputs.tag_name }}
         run: |
-          # Get list of changes between tag and previous HEAD
-          previous_head="${{ needs.prepare-restore.outputs.previous_head }}"
-          current_tag="${{ needs.prepare-restore.outputs.tag_name }}"
+          # Get list of changes between tag and main branch HEAD
+          main_head_sha="$MAIN_HEAD_SHA"
+          current_tag="$CURRENT_TAG"
 
           # Generate change summary
           changes_summary="change-tracking-$(date +%s).md"
@@ -113,7 +124,7 @@ jobs:
 
           echo "Generated on: $(date -u)" >> "$changes_summary"
           echo "Restoration tag: $current_tag" >> "$changes_summary"
-          echo "Previous HEAD: $previous_head" >> "$changes_summary"
+          echo "Main branch SHA at workflow start: $main_head_sha" >> "$changes_summary"
           echo "" >> "$changes_summary"
 
           # Get file changes
@@ -123,28 +134,28 @@ jobs:
           echo "" >> "$changes_summary"
 
           # Added files
-          added=$(git diff "$current_tag" "$previous_head" --diff-filter=A --name-only 2>/dev/null | wc -l)
+          added=$(git diff "$current_tag" "$main_head_sha" --diff-filter=A --name-only 2>/dev/null | wc -l)
           if [ "$added" -gt 0 ]; then
             echo "### Added ($added files)" >> "$changes_summary"
             echo "" >> "$changes_summary"
-            git diff "$current_tag" "$previous_head" --diff-filter=A --name-only 2>/dev/null | sed 's/^/- /' >> "$changes_summary"
+            git diff "$current_tag" "$main_head_sha" --diff-filter=A --name-only 2>/dev/null | sed 's/^/- /' >> "$changes_summary"
             echo "" >> "$changes_summary"
           fi
 
           # Modified files
-          modified=$(git diff "$current_tag" "$previous_head" --diff-filter=M --name-only 2>/dev/null | wc -l)
+          modified=$(git diff "$current_tag" "$main_head_sha" --diff-filter=M --name-only 2>/dev/null | wc -l)
           if [ "$modified" -gt 0 ]; then
             echo "### Modified ($modified files)" >> "$changes_summary"
             echo "" >> "$changes_summary"
-            git diff "$current_tag" "$previous_head" --diff-filter=M --name-only 2>/dev/null | sed 's/^/- /' >> "$changes_summary"
+            git diff "$current_tag" "$main_head_sha" --diff-filter=M --name-only 2>/dev/null | sed 's/^/- /' >> "$changes_summary"
             echo "" >> "$changes_summary"
           fi
 
           # Deleted files
-          deleted=$(git diff "$current_tag" "$previous_head" --diff-filter=D --name-only 2>/dev/null | wc -l)
+          deleted=$(git diff "$current_tag" "$main_head_sha" --diff-filter=D --name-only 2>/dev/null | wc -l)
           if [ "$deleted" -gt 0 ]; then
             echo "### Deleted ($deleted files)" >> "$changes_summary"
-            git diff "$current_tag" "$previous_head" --diff-filter=D --name-only 2>/dev/null | sed 's/^/- /' >> "$changes_summary"
+            git diff "$current_tag" "$main_head_sha" --diff-filter=D --name-only 2>/dev/null | sed 's/^/- /' >> "$changes_summary"
             echo "" >> "$changes_summary"
           fi
 
@@ -224,7 +235,7 @@ jobs:
           echo "| Restored tag | \`${{ needs.restore-and-deploy.outputs.restored_tag }}\` |" >> $GITHUB_STEP_SUMMARY
           echo "| Restoration time | ${{ needs.restore-and-deploy.outputs.restored_timestamp }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Changes reverted | ${{ needs.restore-and-deploy.outputs.changes_count }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Previous HEAD | \`${{ needs.restore-and-deploy.outputs.previous_head }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Main branch SHA at workflow start | \`${{ needs.restore-and-deploy.outputs.main_head_sha }}\` |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Next Steps" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -239,13 +250,15 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
           echo "🔄 **Site restoration complete**" >> $GITHUB_STEP_SUMMARY
-          echo "Restored from tag: ${{ needs.restore-and-deploy.outputs.restored_tag }}"
-          echo "Changes reverted: ${{ needs.restore-and-deploy.outputs.changes_count }}"
+          echo "Restored from tag: ${{ needs.restore-and-deploy.outputs.restored_tag }}" >> $GITHUB_STEP_SUMMARY
+          echo "Changes reverted: ${{ needs.restore-and-deploy.outputs.changes_count }}" >> $GITHUB_STEP_SUMMARY
           echo "Time to restore: < 15 minutes" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
 
       - name: Failure notification
         if: needs.prepare-restore.result != 'success' || needs.restore-and-deploy.result != 'success'
+        env:
+          TAG_NAME: ${{ github.event.inputs.tag_name }}
         run: |
           echo "## Restoration Failed" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -253,7 +266,7 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Troubleshooting:" >> $GITHUB_STEP_SUMMARY
           echo "1. Check workflow logs for specific error messages" >> $GITHUB_STEP_SUMMARY
-          echo "2. Verify tag \`${{ github.event.inputs.tag_name }}\` exists and is valid" >> $GITHUB_STEP_SUMMARY
+          echo "2. Verify tag \`$TAG_NAME\` exists and is valid" >> $GITHUB_STEP_SUMMARY
           echo "3. Verify tag points to a working commit that builds successfully" >> $GITHUB_STEP_SUMMARY
           echo "4. Try restoring from an earlier tag if current tag build is broken" >> $GITHUB_STEP_SUMMARY
           echo "5. Check GitHub Pages deployment settings" >> $GITHUB_STEP_SUMMARY
