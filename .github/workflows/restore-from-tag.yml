@@ -56,9 +56,9 @@ jobs:
     needs: prepare-restore
     runs-on: ubuntu-latest
     outputs:
-      restoration_success: ${{ steps.deploy.outputs.success }}
+      restoration_success: ${{ steps.restoration-summary.outputs.success }}
       restored_tag: ${{ needs.prepare-restore.outputs.tag_name }}
-      restored_timestamp: ${{ steps.deploy.outputs.timestamp }}
+      restored_timestamp: ${{ steps.restoration-summary.outputs.timestamp }}
       previous_head: ${{ needs.prepare-restore.outputs.previous_head }}
       changes_count: ${{ steps.track-changes.outputs.changes_count }}
     steps:
@@ -201,6 +201,7 @@ jobs:
           artifact_name: github-pages
 
       - name: Output restoration summary
+        id: restoration-summary
         run: |
           timestamp=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
           echo "success=true" >> $GITHUB_OUTPUT
