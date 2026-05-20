@@ -10,6 +10,7 @@ displayed_sidebar: docsEnglish
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
+import JDKVersions from '/src/components/en-us/_prerequisites-jdk-versions.mdx';
 
 ScalarDB Data Loader is a utility tool enabling you to import and export data with ScalarDB easily.
 
@@ -25,9 +26,8 @@ Data Loader provides structured import and export processes with validation, err
 
 Before using Data Loader, make sure you have the following:
 
-One of the following Java Development Kits (JDKs):
-  - Oracle JDK: 8, 11, 17, or 21 (LTS versions)
-  - OpenJDK (Eclipse Temurin, Amazon Corretto, or Microsoft Build of OpenJDK): 8, 11, 17, or 21 (LTS versions)
+- One of the following Java Development Kits (JDKs):
+  <JDKVersions versionNumbers="8, 11, 17, or 21" />
 - A valid **`scalardb.properties`** configuration file with your database connection settings
 - Access to your database with appropriate permissions for read and write operations. For details about the required permissions, see [Database permission requirements](requirements.mdx#database-permission-requirements).
 

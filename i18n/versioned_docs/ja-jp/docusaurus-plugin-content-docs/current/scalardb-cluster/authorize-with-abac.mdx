@@ -9,6 +9,7 @@ displayed_sidebar: docsJapanese
 
 import WarningLicenseKeyContact from '/src/components/ja-jp/_warning-license-key-contact.mdx';
 import TranslationBanner from '/src/components/_translation-ja-jp.mdx';
+import JDKVersions from '/src/components/ja-jp/_prerequisites-jdk-versions.mdx';
 
 <TranslationBanner />
 
@@ -460,14 +461,9 @@ ABAC 機能を有効にする場合は、認証と認可を有効にする必要
 
 ### 前提条件
 
-- [Eclipse Temurin](https://adoptium.net/temurin/releases/) の OpenJDK LTS バージョン (8、11、17、または 21)
+- 以下のいずれかの Java Development Kit (JDK):
+  <JDKVersions versionNumbers="8、11、17、または 21" />
 - [Docker](https://www.docker.com/get-started/) 20.10 以降、および [Docker Compose](https://docs.docker.com/compose/install/) V2 以降
-
-:::note
-
-このチュートリアルは、Eclipse Temurin の OpenJDK でテストされています。ただし、ScalarDB 自体は、さまざまなベンダーの JDK ディストリビューションでテストされています。ScalarDB の要件の詳細については、互換性のある JDK ディストリビューションを含む[要件](../requirements.mdx)を参照してください。
-
-:::
 
 <WarningLicenseKeyContact product="ScalarDB Cluster" />
 

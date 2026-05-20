@@ -10,6 +10,7 @@ displayed_sidebar: docsEnglish
 import WarningLicenseKeyContact from '/src/components/en-us/_warning-license-key-contact.mdx';
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
+import JDKVersions from '/src/components/en-us/_prerequisites-jdk-versions.mdx';
 
 ScalarDB Cluster provides a vector store abstraction to help applications interact with vector stores (embedding stores) in a unified way. This getting-started tutorial explains how to run vector search in ScalarDB Cluster.
 
@@ -45,14 +46,9 @@ This tutorial explains how to run vector search in ScalarDB Cluster.
 
 ### Prerequisites
 
-- OpenJDK LTS version (8, 11, 17, or 21) from [Eclipse Temurin](https://adoptium.net/temurin/releases/)
+- One of the following Java Development Kits (JDKs):
+  <JDKVersions versionNumbers="8, 11, 17, or 21" />
 - [Docker](https://www.docker.com/get-started/) 20.10 or later with [Docker Compose](https://docs.docker.com/compose/install/) V2 or later
-
-:::note
-
-This tutorial has been tested with OpenJDK from Eclipse Temurin. ScalarDB itself, however, has been tested with JDK distributions from various vendors. For details about the requirements for ScalarDB, including compatible JDK distributions, please see [Requirements](../requirements.mdx).
-
-:::
 
 <WarningLicenseKeyContact product="ScalarDB Cluster" />
 

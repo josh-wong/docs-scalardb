@@ -10,6 +10,7 @@ displayed_sidebar: docsEnglish
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
+import JDKVersions from '/src/components/en-us/_prerequisites-jdk-versions.mdx';
 
 This page outlines the requirements for using each ScalarDB component, including the programming languages and their versions, supported databases and their versions, and the necessary configurations.
 
@@ -27,8 +28,7 @@ The ScalarDB Core library is available on the Maven Central Repository. You can 
 
 For building applications that integrate with the library, the following Java Development Kits (JDKs) are verified and supported.
 
-- **[Oracle JDK](https://www.oracle.com/java/):** 8, 11, 17 or 21 (LTS versions)
-- **[OpenJDK](https://openjdk.org/) ([Eclipse Temurin](https://adoptium.net/temurin/), [Amazon Corretto](https://aws.amazon.com/corretto/), or [Microsoft Build of OpenJDK](https://learn.microsoft.com/en-us/java/openjdk/)):** 8, 11, 17 or 21 (LTS versions)
+<JDKVersions versionNumbers="8, 11, 17, or 21" />
 
 Java Runtime Environments (JREs) of these JDKs are also supported for running the tools.
 
@@ -515,8 +515,7 @@ The Java client SDK for ScalarDB Cluster is available on the Maven Central Repos
 
 For building applications that integrate with the library, the following Java Development Kits (JDKs) are verified and supported:
 
-- **[Oracle JDK](https://www.oracle.com/java/):** 8, 11, 17 or 21 (LTS versions)
-- **[OpenJDK](https://openjdk.org/) ([Eclipse Temurin](https://adoptium.net/temurin/), [Amazon Corretto](https://aws.amazon.com/corretto/), or [Microsoft Build of OpenJDK](https://learn.microsoft.com/en-us/java/openjdk/)):** 8, 11, 17 or 21 (LTS versions)
+<JDKVersions versionNumbers="8, 11, 17, or 21" />
 
 #### .NET
 
@@ -594,8 +593,7 @@ The ScalarDB Analytics library is built with JDK 11 to be able to be integrated 
 
 For running ScalarDB Analytics CLI, the following JREs are verified and supported:
 
-- **[Oracle JDK](https://www.oracle.com/java/):** 21 
-- **[OpenJDK](https://openjdk.org/) ([Eclipse Temurin](https://adoptium.net/temurin/), [Amazon Corretto](https://aws.amazon.com/corretto/), or [Microsoft Build of OpenJDK](https://learn.microsoft.com/en-us/java/openjdk/)):** 21
+<JDKVersions versionNumbers="21" />
 
 ### Databases
 

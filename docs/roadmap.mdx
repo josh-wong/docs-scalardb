@@ -18,73 +18,32 @@ If you have a feature request or want to prioritize feature development, please 
 
 :::
 
-### CY2025 Q4
+### CY2026 Q2
 
-#### Support for additional databases
+#### New components
 
-- **TiDB**
-    - Users will be able to use TiDB as an underlying database through ScalarDB Core and ScalarDB Cluster.
-- **AlloyDB**
-    - Users will be able to use AlloyDB as an underlying database through ScalarDB Core and ScalarDB Cluster.
-- **Azure Blob Storage**
-    - Users will be able to use Azure Blob Storage as an underlying database through ScalarDB Cluster.
-- **Amazon S3**
-    - Users will be able to use Amazon S3 as an underlying database through ScalarDB Cluster.
-- **Google Cloud Storage**
-    - Users will be able to use Google Cloud Storage as an underlying database through ScalarDB Cluster and ScalarDB Analytics.
+- **ScalarDB Saga**
+    - Users will be able to use ScalarDB Saga, a distributed transaction coordinator that implements the Saga pattern, to manage long-running transactions across multiple services and databases in a microservices architecture.
+- **ScalarDB 2PC coordinator**
+    - Users will be able to use ScalarDB 2PC coordinator, a distributed transaction coordinator that implements the two-phase commit protocol, to manage distributed transactions across multiple services and databases in a microservices architecture.
 
 #### New features
 
-- **Decoupled metadata management**
-    - Users will be able to start using ScalarDB Cluster without migrating or changing the schemas of existing applications by managing the transaction metadata of ScalarDB in a separate location.
-- **Role-based access control (RBAC)**
-    - Users will be able to define roles and assign permissions to those roles so that users can manage access control in a more flexible way.
-- **Addition of SQL operations for aggregation**
-    - Users will be able to issue aggregation operations in ScalarDB SQL.
-
-#### Improvements
-
-- **Increased BLOB type size for Oracle Database and IBM Db2**
-    - Users will be able to use larger BLOB type size in ScalarDB Core and ScalarDB Cluster. The maximum size of the BLOB type will be increased to 4 GB.
-
-#### Usability
-
-- **More flexible ALTER operations**
-    - Users will be able to issue more flexible ALTER operations, such as altering schemas, renaming namespaces/tables/columns, and dropping columns, so that they can manage their schemas in a more flexible way.
-
-#### Cloud support
-
-- **Google Cloud Platform (GCP) support for ScalarDB Cluster**
-    - Users will be able to deploy ScalarDB Cluster in Google Kubernetes Engine (GKE) in GCP.
-- **Container offering in Amazon Marketplace for ScalarDB Analytics**
-    - Users will be able to deploy ScalarDB Analytics by using the container offering, which enables users to use a pay-as-you-go subscription model.
-- **Red Hat OpenShift support**
-    - Users will be able to deploy ScalarDB Cluster in Red Hat OpenShift.
-
-#### AI/LLM support
-
-- **Model Context Protocol (MCP) server**
-    - Users will be able to use the MCP server of ScalarDB Core and ScalarDB Cluster to interact with them by using AI and large language model (LLM) applications. The MCP server will provide a way to communicate with ScalarDB by using natural language, enabling users to perform operations like querying and managing data in a more intuitive manner.
-- **LLM-friendly rule files for ScalarDB**
-    - Users will be able to ask questions and tasks to LLMs by using the LLM-friendly rule files so that LLMs can work for them with a better understanding of ScalarDB. The rule files will be designed to provide LLMs with the necessary context and instructions to effectively interact with ScalarDB, making it easier for users to leverage AI capabilities in their applications.
-
-### CY2026 Q1
-
-#### New features
-
-- **Native secondary index**
-    - Users will be able to define flexible secondary indexes. The existing secondary index is limited because it is implemented based on the common capabilities of the supported databases' secondary indexes. Therefore, for example, users cannot define a multi-column index. The new secondary index will be created at the ScalarDB layer so that users can create more flexible indexes, like a multi-column index.
-- **Views**
-    - Users will be able to define views so that they can manage multiple different databases in an easier and simplified way.
 - **Authentication with OIDC**
     - Users will be able to authenticate to ScalarDB Cluster and ScalarDB Analytics by using OpenID Connect (OIDC).
-- **Universal catalog**
-    - Users will be able to manage metadata, including schemas and semantic information, for operational and analytical databases across separate business domains in a unified manner.
 - **Universal authentication and authorization**
     - Users will be able to be given access to ScalarDB Cluster and ScalarDB Analytics by using a unified authentication and authorization method.
+- **Coordinator-based redo logging for pause-less backup**
+    - Users will be able to perform pause-less backup by using coordinator-based redo logging, which allows users to back up data without pausing the system.
+- **Universal catalog**
+    - Users will be able to manage metadata, including schemas and semantic information, for operational and analytical databases across separate business domains in a unified manner.
 
 #### Usability
 
+- **Strongly consistent secondary index access**
+    - Users will be able to access secondary indexes with strong consistency so that they can get the most up-to-date data from secondary indexes.
+- **Support more SQL syntax/features**
+    - Users will be able to use more SQL syntax/features in ScalarDB SQL so that they can express their intentions in a simpler way. For example, users will be able to use the IN operator in ScalarDB SQL.
 - **Addition of DECIMAL data types**
     - Users will be able to use DECIMAL data types so that users can handle decimal numbers with high precision.
 - **Elimination of out-of-memory errors due to large scans**
@@ -92,45 +51,44 @@ If you have a feature request or want to prioritize feature development, please 
 
 #### Performance
 
-- **Batch operations in SQL**
-    - Users will be able to issue operations in a batch in ScalarDB SQL so that they can improve performance when executing multiple operations by reducing the number of roundtrips between applications and ScalarDB Cluster.
-- **Piggyback operations in SQL**
-    - Users will be able to piggyback BEGIN and COMMIT operations on data operations in ScalarDB SQL so that they can improve performance when executing multiple operations within a transaction by reducing the number of roundtrips between applications and ScalarDB Cluster.
 - **Reduction of storage space needed for managing ScalarDB metadata**
     - Users will likely use less storage space to run ScalarDB. ScalarDB will remove the before image of committed transactions after they are committed. However, whether or not those committed transactions will impact actual storage space depends on the underlying databases.
-
-#### Cloud support
-
-- **Azure support for ScalarDB Cluster**
-    - Users will be able to deploy ScalarDB Cluster by using the Azure marketplace offering, which enables users to use a pay-as-you-go subscription model.
-
-### CY2026 Q2
-
-#### New features
-
-- **Audit logging**
-    - Users will be able to view and manage the access logs of ScalarDB Cluster and Analytics, mainly for auditing purposes.
-- **Two-layered query engines**
-    - Users will be able to use two-layered query engines to better federate analytical queries across domains. The first-layer query engine is responsible for federating analytical queries across various domains, while the second-layer query engine federates analytical queries within a specific domain across its corresponding databases.
-- **LangGraph4j integration**
-    - Users will be able to use LangGraph4j to build AI applications that can interact with ScalarDB.
-
-#### Performance
-
 - **Predicate pushdown**
     - Users will be able to benefit from predicate pushdown in ScalarDB Analytics so that filtering operations are pushed down to the underlying databases to reduce data transfer and improve query performance.
 
 #### Cloud support
 
-- **Azure support for ScalarDB Analytics**
-    - Users will be able to deploy ScalarDB Analytics by using the Azure marketplace offering, which enables users to use a pay-as-you-go subscription model.
+- **Google Cloud Marketplace support for ScalarDB Cluster and ScalarDB Analytics**
+    - Users will be able to deploy ScalarDB Cluster and ScalarDB Analytics by using the Google Cloud Marketplace offering, which enables users to use a pay-as-you-go subscription model.
+- **Red Hat Ecosystem Catalog integration for ScalarDB Cluster**
+    - Users will be able to deploy ScalarDB Cluster from Red Hat Ecosystem Catalog, which enables users to use ScalarDB Cluster as Red Hat-certified third-party products and services.
+
+### CY2026 Q3
+
+#### New features
+
+- **Audit logging**
+    - Users will be able to view and manage the access logs of ScalarDB Cluster and Analytics, mainly for auditing purposes.
+- **Native secondary index**
+    - Users will be able to define flexible secondary indexes. The existing secondary index is limited because it is implemented based on the common capabilities of the supported databases' secondary indexes. Therefore, for example, users cannot define a multi-column index. The new secondary index will be created at the ScalarDB layer so that users can create more flexible indexes, like a multi-column index.
+- **Views**
+    - Users will be able to define views so that they can manage multiple different databases in an easier and simplified way.
+- **Two-layered query engines**
+    - Users will be able to use two-layered query engines to better federate analytical queries across domains. The first-layer query engine is responsible for federating analytical queries across various domains, while the second-layer query engine federates analytical queries within a specific domain across its corresponding databases.
+- **LangGraph4j integration**
+    - Users will be able to use LangGraph4j to build AI applications that can interact with ScalarDB.
+
+#### Cloud support
+
+- **Azure Marketplace support for ScalarDB Cluster and ScalarDB Analytics**
+    - Users will be able to deploy ScalarDB Cluster and ScalarDB Analytics by using the Azure Marketplace offering, which enables users to use a pay-as-you-go subscription model.
 
 #### Integration
 
 - **Kong integration**
     - Users will be able to integrate ScalarDB Cluster with Kong Ingress Controller so that they can manage and secure access to ScalarDB Cluster more easily.
 
-### CY2026 Q3
+### CY2026 Q4
 
 #### New features
 
@@ -146,17 +104,7 @@ If you have a feature request or want to prioritize feature development, please 
 - **Adaptive caching**
     - Users will be able to benefit from adaptive caching in ScalarDB Analytics so that frequently accessed data is cached automatically to improve query performance.
 
-#### Cloud support
-
-- **Google Cloud Platform (GCP) support for ScalarDB Analytics**
-    - Users will be able to deploy ScalarDB Analytics by using the GCP marketplace offering, which enables users to use a pay-as-you-go subscription model.
-
-#### Integration
-
-- **Red Hat Ecosystem Catalog integration**
-    - Users will be able to deploy ScalarDB Cluster from Red Hat Ecosystem Catalog, which enables users to use ScalarDB Cluster as Red Hat-certified third-party products and services.
-
-### CY2026 Q4
+### CY2027
 
 #### New features
 
@@ -164,5 +112,3 @@ If you have a feature request or want to prioritize feature development, please 
     - Users will be able to define functions so that they can use functions in SQLs to express complex logic in a simpler way.
 - **GraphDB support**
     - Users will be able to use GraphDBs as underlying databases through ScalarDB Cluster.
-
-### CY2027

@@ -10,6 +10,7 @@ displayed_sidebar: docsEnglish
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
+import JDKVersions from '/src/components/en-us/_prerequisites-jdk-versions.mdx';
 
 This tutorial describes how to run benchmarking tools for ScalarDB. Database benchmarking is helpful for evaluating how databases perform against a set of standards.
 
@@ -23,8 +24,8 @@ This tutorial describes how to run benchmarking tools for ScalarDB. Database ben
 
 ## Prerequisites
 
-- Java Development Kit (JDK):
-  - OpenJDK LTS version (8, 11, 17, or 21) from [Eclipse Temurin](https://adoptium.net/temurin/releases/)
+- One of the following Java Development Kits (JDKs):
+  <JDKVersions versionNumbers="8, 11, 17, or 21" />
 - Gradle
 - [Kelpie](https://github.com/scalar-labs/kelpie)
   - Kelpie is a framework for performing end-to-end testing, such as system benchmarking and verification. Get the latest version from [Kelpie Releases](https://github.com/scalar-labs/kelpie), and unzip the archive file.

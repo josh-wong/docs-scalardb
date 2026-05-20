@@ -6,7 +6,7 @@ displayed_sidebar: docsEnglish
 
 # Authenticate and Authorize Users in ScalarDB Analytics
 
-ScalarDB Analytics can authenticate and authorize users with fine-grained, resource-level access control. You can create users and grant or revoke permissions on catalogs, data sources, namespaces, and tables. Roles can also be created to group permissions and can be granted to users. This guide describes how to use authentication and authorization in ScalarDB Analytics.
+ScalarDB Analytics can authenticate and authorize users with resource-level access control. You can create users and grant or revoke permissions on catalogs, data sources, namespaces, and tables. Roles can also be created to group permissions and can be granted to users. This guide describes how to use authentication and authorization in ScalarDB Analytics.
 
 ## Authentication
 
@@ -17,30 +17,30 @@ ScalarDB Analytics authenticates users by verifying their username and password 
 ScalarDB Analytics supports the following authentication backends:
 
 - **Internal:** Manages user credentials directly within ScalarDB Analytics. Users are registered by using the `user register` CLI command, and their passwords are stored (hashed) in the ScalarDB Analytics metadata database. This is the default backend.
-- **ScalarDB Cluster:** Delegates credential verification to an external ScalarDB Cluster instance. When a user logs in for the first time, ScalarDB Analytics automatically creates a corresponding user record (just-in-time provisioning). The `user register` and `user unregister` commands are not available with this backend because user lifecycle is managed in ScalarDB Cluster.
+- **ScalarDB Cluster:** Delegates credential verification to an external ScalarDB Cluster instance. When a user logs in for the first time, ScalarDB Analytics automatically creates a corresponding user record (just-in-time provisioning). The `user register` and `user unregister` commands are not available with this backend because the user lifecycle is managed in ScalarDB Cluster.
 
 You can configure the authentication backend by using the `scalar.db.analytics.server.auth.password.backend` server property. For details, see [Configurations](#configurations).
 
-## Users
+### Users
 
-Users can log in to ScalarDB Analytics with a username and a password and execute operations if they have the required permissions.
+A user is an entity that can authenticate with ScalarDB Analytics and perform operations based on assigned permissions. Users can log in to ScalarDB Analytics with a username and a password and execute operations if they have the required permissions.
 
 Authentication and authorization support two types of users:
 
-- **Superusers:** This type of user has all permissions. Only superusers can create or delete catalogs and manage users and roles.
+- **Superusers:** This type of user has all permissions. Only superusers can create catalogs and manage users and roles.
 - **Normal users:** This type of user initially doesn't have any permissions, so they need to be granted permissions by a superuser or a user with catalog-level admin permission.
 
-### Initial user
+### Initial admin user
 
 When you enable authentication and authorization, ScalarDB Analytics creates an initial admin user and assigns a built-in superuser role to that user. The behavior differs depending on the authentication backend.
 
 #### Internal backend
 
-When the server starts, ScalarDB Analytics creates the user specified by `scalar.db.analytics.server.auth.initial-admin-username` with the password specified by `scalar.db.analytics.server.auth.password.internal.initial-admin-password` and assigns the SUPERADMIN role to that user. This assignment occurs only if no users are already assigned to the SUPERADMIN role. You can log in with this user and create other users if necessary.
+When the server starts, ScalarDB Analytics creates the user specified by `scalar.db.analytics.server.auth.initial_admin_username` with the password specified by `scalar.db.analytics.server.auth.password.internal.initial_admin_password` and assigns the SUPERADMIN role to that user. This assignment occurs only if no users are already assigned to the SUPERADMIN role. You can log in with this user and create other users if necessary.
 
 #### ScalarDB Cluster backend
 
-The server does not create any users at startup. Instead, when the user specified by `scalar.db.analytics.server.auth.initial-admin-username` logs in for the first time, ScalarDB Analytics automatically registers that user through just-in-time provisioning and assigns the SUPERADMIN role. This assignment occurs only if no users are already assigned to the SUPERADMIN role. Other users are also provisioned on first login, but they are not assigned the SUPERADMIN role.
+The server does not create any users at startup. Instead, when the user specified by `scalar.db.analytics.server.auth.initial_admin_username` logs in for the first time, ScalarDB Analytics automatically registers that user through just-in-time provisioning and assigns the SUPERADMIN role. This assignment occurs only if no users are already assigned to the SUPERADMIN role. Other users are also provisioned on first login, but they are not assigned the SUPERADMIN role.
 
 ### User management
 
@@ -58,17 +58,21 @@ scalardb-analytics-cli user list
 scalardb-analytics-cli user describe -u alice
 ```
 
-## Roles
+## Authorization
+
+ScalarDB Analytics provides resource-level access control through roles and permissions. This section describes how to manage roles, permissions, and access control.
+
+### Roles
 
 A role is a named collection of permissions that can be granted to users. Using roles provides a convenient way to manage permissions for multiple users, rather than granting individual permissions to each user.
 
 Only superusers can create, delete, or list roles. Only superusers can assign roles to users or remove role assignments.
 
-### SUPERADMIN role
+#### SUPERADMIN role
 
 SUPERADMIN is a built-in role that is automatically created when the server starts. Users assigned to the SUPERADMIN role bypass all access control checks and can perform any operation. In API responses, users assigned to the SUPERADMIN role are represented with the `is_superuser` flag set to `true`.
 
-### Role management
+#### Role management
 
 You can manage roles by using the following CLI commands:
 
@@ -80,9 +84,16 @@ scalardb-analytics-cli role grant -r analyst -u alice
 scalardb-analytics-cli role revoke -r analyst -u alice
 ```
 
-## Permissions
+### Permissions
 
-ScalarDB Analytics uses resource-level access control. Permissions are granted on a specific resource and apply to the operations associated with the resource type. When granting or revoking permissions through the CLI, you specify the resource type as a subcommand and the permission level with the `-p` option (`read`, `write`, or `admin`).
+ScalarDB Analytics uses resource-level access control. Permissions are granted on a specific resource and apply to the operations associated with the resource type. When granting or revoking permissions through the CLI, you specify the resource type as a subcommand and the permission level with the `-p` option.
+
+The valid `-p` values depend on the resource type:
+
+- **Catalog:** `read`, `write`, or `admin`
+- **Data source:** `read` or `admin`
+- **Namespace:** `read`
+- **Table:** `read`
 
 The following permissions are available:
 
@@ -96,7 +107,7 @@ The following permissions are available:
 | `NAMESPACE_READ`    | Namespace     | `read`     | Read namespace metadata.                                                           |
 | `TABLE_READ`        | Table         | `read`     | Read table metadata.                                                               |
 
-### Resource hierarchy
+#### Resource hierarchy
 
 Resources in ScalarDB Analytics are organized in a hierarchy. Permissions granted at a higher level in the hierarchy apply to all resources below that level.
 
@@ -110,7 +121,7 @@ System (SUPERADMIN only)
 
 Permissions granted at a higher level propagate to all resources below that level. For example, granting `CATALOG_READ` on a catalog allows the user to read metadata for all data sources, namespaces, and tables within that catalog. However, the specific permissions required for each operation are defined individually. For details, see [Which permissions are required for each type of operation](#which-permissions-are-required-for-each-type-of-operation).
 
-### Direct and role-based grants
+#### Direct and role-based grants
 
 Permissions can be granted in two ways:
 
@@ -119,7 +130,7 @@ Permissions can be granted in two ways:
 
 A user's effective permissions are the union of all directly granted permissions and all permissions from assigned roles.
 
-### Permission management
+#### Permission management
 
 You can grant and revoke permissions by specifying the resource type, the target resource, and the permission level. Permissions can be granted to a user (`--user`) or a role (`--role`).
 
@@ -163,13 +174,13 @@ scalardb-analytics-cli permission list -u alice
 
 Users who hold `CATALOG_ADMIN` on a catalog can grant and revoke permissions on any resource within that catalog. Superusers can manage permissions on all resources.
 
-### Which permissions are required for each type of operation
+#### Which permissions are required for each type of operation
 
 The following table shows which permissions satisfy the authorization requirement for each operation. For operations that involve a resource hierarchy, the system checks permissions at each level, starting from the target resource and moving up to the catalog level. A match at any level is sufficient.
 
 :::note
 
-When [ScalarDB authorization delegation](#scalardb-authorization-delegation) is enabled, namespace-level and table-level authorization for ScalarDB data sources is delegated to ScalarDB Cluster instead of following the permissions listed in the table below.
+When [ScalarDB authorization delegation](#scalardb-authorization-delegation) is enabled, namespace-level and table-level authorization for ScalarDB data sources (databases that ScalarDB Cluster manages) is delegated to ScalarDB Cluster instead of following the permissions listed in the table below.
 
 :::
 
@@ -194,23 +205,23 @@ When [ScalarDB authorization delegation](#scalardb-authorization-delegation) is 
 | Grant or revoke a permission    | `CATALOG_ADMIN` on the target catalog, or SUPERADMIN                                                                                        |
 | List permissions                | Same as the corresponding read operation for the resource                                                                                   |
 
-## ScalarDB authorization delegation
+### ScalarDB authorization delegation
 
-When you use ScalarDB Cluster as the authentication backend, you can optionally delegate namespace-level and table-level authorization for ScalarDB data sources to ScalarDB Cluster. This means that ScalarDB Cluster's privilege system becomes the single source of truth for access control on ScalarDB data, eliminating the need to manage permissions in two places.
+When you use ScalarDB Cluster as the authentication backend, you can optionally delegate namespace-level and table-level authorization for ScalarDB data sources (databases that ScalarDB Cluster manages) to ScalarDB Cluster. This means that the privilege system in ScalarDB Cluster becomes the single source of truth for access control on ScalarDB data, eliminating the need to manage permissions in two places.
 
-### How delegation works
+#### How delegation works
 
-When authorization delegation is enabled, ScalarDB Analytics checks ScalarDB Cluster privileges (specifically, the `SELECT` privilege) instead of its own access control entries for namespace and table operations on ScalarDB data sources. Catalog-level and data source-level authorization remains under ScalarDB Analytics access control regardless of delegation settings.
+When authorization delegation is enabled, ScalarDB Analytics checks ScalarDB Cluster privileges (specifically, the `READ` privilege) instead of its own access control entries for namespace and table operations on ScalarDB data sources. Catalog-level and data source-level authorization remains under ScalarDB Analytics access control regardless of delegation settings.
 
-### Prerequisites
+#### Prerequisites
 
 To use ScalarDB authorization delegation, the following conditions must be met:
 
 - The authentication backend must be set to `scalardb-cluster`.
-- The `scalar.db.analytics.server.auth.password.scalardb-cluster.acl-delegation` property must be set to `true`.
+- The `scalar.db.analytics.server.auth.password.scalardb_cluster.acl_delegation` property must be set to `true`.
 - The user must have been authenticated through the ScalarDB Cluster backend.
 
-### Authorization responsibility by resource level
+#### Authorization responsibility by resource level
 
 The following table shows which system is responsible for authorization at each resource level when authorization delegation is enabled or disabled.
 
@@ -218,10 +229,10 @@ The following table shows which system is responsible for authorization at each 
 |:------------------------------|:-------------------|:--------------------|
 | Catalog                       | ScalarDB Analytics | ScalarDB Analytics  |
 | Data source                   | ScalarDB Analytics | ScalarDB Analytics  |
-| Namespace (ScalarDB)          | ScalarDB Cluster   | ScalarDB Analytics  |
-| Table (ScalarDB)              | ScalarDB Cluster   | ScalarDB Analytics  |
-| Namespace (non-ScalarDB)      | ScalarDB Analytics | ScalarDB Analytics  |
-| Table (non-ScalarDB)          | ScalarDB Analytics | ScalarDB Analytics  |
+| Namespace (managed by ScalarDB Cluster)          | ScalarDB Cluster   | ScalarDB Analytics  |
+| Table (managed by ScalarDB Cluster)              | ScalarDB Cluster   | ScalarDB Analytics  |
+| Namespace (not managed by ScalarDB Cluster)      | ScalarDB Analytics | ScalarDB Analytics  |
+| Table (not managed by ScalarDB Cluster)          | ScalarDB Analytics | ScalarDB Analytics  |
 
 :::note
 
@@ -237,55 +248,123 @@ This section describes the available configurations for authentication and autho
 
 To enable authentication and authorization, you need to set `scalar.db.analytics.server.auth.enabled` to `true`.
 
-| Name                                            | Description                                          | Default    |
-|-------------------------------------------------|------------------------------------------------------|------------|
-| `scalar.db.analytics.server.auth.enabled`       | Whether authentication and authorization are enabled. | `false`    |
+#### `enabled`
+
+- **Field:** `scalar.db.analytics.server.auth.enabled`
+- **Description:** Whether authentication and authorization are enabled.
+- **Default value:** `false`
 
 You can also set the following configurations:
 
-| Name                                                                       | Description                                                                                           | Default    |
-|----------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------|------------|
-| `scalar.db.analytics.server.auth.initial-admin-username`                   | The username of the initial admin user who will be assigned the SUPERADMIN role.                       |            |
-| `scalar.db.analytics.server.auth.password.backend`                         | The authentication backend to use (`internal` or `scalardb-cluster`).                                 | `internal` |
-| `scalar.db.analytics.server.auth.password.token-ttl-seconds`               | The time-to-live (TTL) of access tokens in seconds.                                                   | `86400`    |
-| `scalar.db.analytics.server.auth.password.internal.initial-admin-password` | The initial password for the admin user. Only used when `auth.password.backend` is set to `internal`.  |            |
+#### `initial_admin_username`
+
+- **Field:** `scalar.db.analytics.server.auth.initial_admin_username`
+- **Description:** The username of the initial admin user who will be assigned the SUPERADMIN role.
+- **Default value:** None
+
+#### `password.backend`
+
+- **Field:** `scalar.db.analytics.server.auth.password.backend`
+- **Description:** The authentication backend to use (`internal` or `scalardb-cluster`).
+- **Default value:** `internal`
+
+#### `password.token_ttl_seconds`
+
+- **Field:** `scalar.db.analytics.server.auth.password.token_ttl_seconds`
+- **Description:** The time-to-live (TTL) of access tokens in seconds.
+- **Default value:** `86400`
+
+#### `password.internal.initial_admin_password`
+
+- **Field:** `scalar.db.analytics.server.auth.password.internal.initial_admin_password`
+- **Description:** The initial password for the admin user. Only used when `auth.password.backend` is set to `internal`.
+- **Default value:** None
 
 If you use `scalardb-cluster` as the authentication backend, you can also set the following configurations:
 
-| Name                                                                               | Description                                                                                                          | Default     |
-|------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------|-------------|
-| `scalar.db.analytics.server.auth.password.scalardb-cluster.host`                   | The hostname or IP address of the ScalarDB Cluster instance.                                                         | `localhost` |
-| `scalar.db.analytics.server.auth.password.scalardb-cluster.port`                   | The port number of the ScalarDB Cluster instance.                                                                    | `60053`     |
-| `scalar.db.analytics.server.auth.password.scalardb-cluster.deadline-millis`         | The gRPC deadline in milliseconds for authentication requests to ScalarDB Cluster.                                   | `5000`      |
-| `scalar.db.analytics.server.auth.password.scalardb-cluster.acl-delegation`          | Whether to delegate namespace-level and table-level authorization for ScalarDB data sources to ScalarDB Cluster. For details, see [ScalarDB authorization delegation](#scalardb-authorization-delegation). | `false`     |
-| `scalar.db.analytics.server.auth.password.scalardb-cluster.tls.enabled`             | Whether to enable TLS for the connection to ScalarDB Cluster.                                                        | `false`     |
-| `scalar.db.analytics.server.auth.password.scalardb-cluster.tls.ca-root-cert-path`   | Path to the CA root certificate file for verifying the ScalarDB Cluster server certificate.                          |             |
-| `scalar.db.analytics.server.auth.password.scalardb-cluster.tls.override-authority`   | Override the server authority for TLS verification of the ScalarDB Cluster connection.                                |             |
+#### `password.scalardb_cluster.host`
+
+- **Field:** `scalar.db.analytics.server.auth.password.scalardb_cluster.host`
+- **Description:** The hostname or IP address of the ScalarDB Cluster instance.
+- **Default value:** `localhost`
+
+#### `password.scalardb_cluster.port`
+
+- **Field:** `scalar.db.analytics.server.auth.password.scalardb_cluster.port`
+- **Description:** The port number of the ScalarDB Cluster instance.
+- **Default value:** `60053`
+
+#### `password.scalardb_cluster.deadline_millis`
+
+- **Field:** `scalar.db.analytics.server.auth.password.scalardb_cluster.deadline_millis`
+- **Description:** The gRPC deadline in milliseconds for authentication requests to ScalarDB Cluster.
+- **Default value:** `5000`
+
+#### `password.scalardb_cluster.acl_delegation`
+
+- **Field:** `scalar.db.analytics.server.auth.password.scalardb_cluster.acl_delegation`
+- **Description:** Whether to delegate namespace-level and table-level authorization for ScalarDB data sources to ScalarDB Cluster. For details, see [ScalarDB authorization delegation](#scalardb-authorization-delegation).
+- **Default value:** `false`
+
+#### `password.scalardb_cluster.tls.enabled`
+
+- **Field:** `scalar.db.analytics.server.auth.password.scalardb_cluster.tls.enabled`
+- **Description:** Whether to enable TLS for the connection to ScalarDB Cluster.
+- **Default value:** `false`
+
+#### `password.scalardb_cluster.tls.ca_root_cert_path`
+
+- **Field:** `scalar.db.analytics.server.auth.password.scalardb_cluster.tls.ca_root_cert_path`
+- **Description:** Path to the CA root certificate file for verifying the ScalarDB Cluster server certificate.
+- **Default value:** None
+
+#### `password.scalardb_cluster.tls.override_authority`
+
+- **Field:** `scalar.db.analytics.server.auth.password.scalardb_cluster.tls.override_authority`
+- **Description:** Override the server authority for TLS verification of the ScalarDB Cluster connection.
+- **Default value:** None
 
 ### CLI client configurations
 
 To authenticate with the ScalarDB Analytics server, configure the client credentials by using a properties file or environment variables.
 
-| Name                                        | Description                                                          | Default |
-|---------------------------------------------|----------------------------------------------------------------------|---------|
-| `scalar.db.analytics.client.auth.username`  | The username for authenticating with the ScalarDB Analytics server.   |         |
-| `scalar.db.analytics.client.auth.password`  | The password for authenticating with the ScalarDB Analytics server.   |         |
+#### `username`
+
+- **Field:** `scalar.db.analytics.client.auth.username`
+- **Description:** The username for authenticating with the ScalarDB Analytics server.
+- **Default value:** None
+
+#### `password`
+
+- **Field:** `scalar.db.analytics.client.auth.password`
+- **Description:** The password for authenticating with the ScalarDB Analytics server.
+- **Default value:** None
 
 You can also set credentials by using environment variables, which take precedence over configuration file properties.
 
-| Environment variable                       | Description                      |
-|--------------------------------------------|----------------------------------|
-| `SCALAR_DB_ANALYTICS_CLIENT_AUTH_USERNAME`  | The username for authentication. |
-| `SCALAR_DB_ANALYTICS_CLIENT_AUTH_PASSWORD`  | The password for authentication. |
+#### `SCALAR_DB_ANALYTICS_CLIENT_AUTH_USERNAME`
+
+- **Description:** The username for authentication.
+
+#### `SCALAR_DB_ANALYTICS_CLIENT_AUTH_PASSWORD`
+
+- **Description:** The password for authentication.
 
 ### Spark configurations
 
 To authenticate Spark applications with the ScalarDB Analytics server, add the following properties to your Spark configuration. Replace `<catalog-name>` with the name of your catalog.
 
-| Name                                                          | Description                                                                              | Default |
-|---------------------------------------------------------------|------------------------------------------------------------------------------------------|---------|
-| `spark.sql.catalog.<catalog-name>.server.auth.username`       | The username for authenticating the Spark application with the ScalarDB Analytics server. |         |
-| `spark.sql.catalog.<catalog-name>.server.auth.password`       | The password for authenticating the Spark application with the ScalarDB Analytics server. |         |
+#### `username`
+
+- **Field:** `spark.sql.catalog.<catalog-name>.server.auth.username`
+- **Description:** The username for authenticating the Spark application with the ScalarDB Analytics server.
+- **Default value:** None
+
+#### `password`
+
+- **Field:** `spark.sql.catalog.<catalog-name>.server.auth.password`
+- **Description:** The password for authenticating the Spark application with the ScalarDB Analytics server.
+- **Default value:** None
 
 ## Wire encryption
 

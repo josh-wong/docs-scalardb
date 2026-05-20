@@ -9,6 +9,7 @@ displayed_sidebar: docsJapanese
 # ScalarDB MCP Server をはじめよう
 
 import TranslationBanner from '/src/components/_translation-ja-jp.mdx';
+import JDKVersions from '/src/components/ja-jp/_prerequisites-jdk-versions.mdx';
 
 <TranslationBanner />
 
@@ -115,9 +116,8 @@ ScalarDB MCP Server をセットアップするには、以下の手順に従っ
 
 以下が整っていることを確認してください:
 
-- (JAR 配布用) Java Runtime Environment:
-  - Oracle JDK: 17 または 21
-  - OpenJDK (Eclipse Temurin、Amazon Corretto、または Microsoft Build of OpenJDK): 17 または 21
+- (JAR 配布用) 以下のいずれかの Java Development Kit (JDK):
+  <JDKVersions versionNumbers="17 または 21" />
 - (Docker 配布用) Docker 20.10 以降
 - (このチュートリアルの例用) Cassandra と MySQL データベースが稼働していること
 - (SQL モード用) ScalarDB Cluster も稼働していること

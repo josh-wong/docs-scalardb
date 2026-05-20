@@ -18,6 +18,12 @@ This page includes a list of release notes for ScalarDB 3.15.
 
 This release includes improvements and bug fixes.
 
+:::warning Backward-incompatible changes
+
+- **MySQL Connector/J replaced with MariaDB Connector/J.** SSL is no longer enabled by default. If you connect to MySQL 8.0 or later with `caching_sha2_password` authentication, add `sslMode=REQUIRED` or `allowPublicKeyRetrieval=true` to your JDBC URL. No action is required for `jdbc:mysql://` URLs because ScalarDB automatically appends `permitMysqlScheme` for compatibility.
+
+:::
+
 ### Community edition
 
 #### Improvements

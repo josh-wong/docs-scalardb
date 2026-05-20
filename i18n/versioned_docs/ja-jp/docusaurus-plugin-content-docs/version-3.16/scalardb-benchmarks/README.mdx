@@ -10,6 +10,7 @@ displayed_sidebar: docsJapanese
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
+import JDKVersions from '/src/components/ja-jp/_prerequisites-jdk-versions.mdx';
 import TranslationBanner from '/src/components/_translation-ja-jp.mdx';
 
 <TranslationBanner />
@@ -26,21 +27,14 @@ import TranslationBanner from '/src/components/_translation-ja-jp.mdx';
 
 ## 前提条件
 
-- 次の Java Development Kit (JDK) のいずれか:
-  - [Oracle JDK](https://www.oracle.com/java/technologies/downloads/) LTS バージョン 8
-  - [OpenJDK](https://openjdk.org/install/) LTS バージョン 8
+- 以下のいずれかの Java Development Kit (JDK):
+  <JDKVersions versionNumbers="8、11、17、または 21" />
 - Gradle
 - [Kelpie](https://github.com/scalar-labs/kelpie)
   - Kelpie は、システムのベンチマークや検証などのエンドツーエンドのテストを実行するためのフレームワークです。 [Kelpie Releases](https://github.com/scalar-labs/kelpie) から最新バージョンを入手し、アーカイブファイルを解凍します。
 - ベンチマークツールを実行するクライアント
 - ターゲットデータベース
   - ScalarDB がサポートするデータベースの一覧については、[Databases](../requirements.mdx#データベース) を参照してください。
-
-:::note
-
-現在、ベンチマークツールを実行するときに使用できるのは JDK 8のみです。
-
-:::
 
 ## ベンチマークツールをセットアップする
 

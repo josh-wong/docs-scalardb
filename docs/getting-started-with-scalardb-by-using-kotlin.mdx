@@ -10,6 +10,7 @@ displayed_sidebar: docsEnglish
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
+import JDKVersions from '/src/components/en-us/_prerequisites-jdk-versions.mdx';
 
 This getting started tutorial explains how to configure your preferred database in ScalarDB and set up a basic electronic money application by using Kotlin. Since Kotlin has Java interoperability, you can use ScalarDB directly from Kotlin.
 
@@ -21,14 +22,9 @@ The electronic money application is simplified for this tutorial and isn't suita
 
 ## Prerequisites for this sample application
 
-- OpenJDK LTS version (8, 11, 17, or 21) from [Eclipse Temurin](https://adoptium.net/temurin/releases/)
+- One of the following Java Development Kits (JDKs):
+  <JDKVersions versionNumbers="8, 11, 17, or 21" />
 - [Docker](https://www.docker.com/get-started/) 20.10 or later with [Docker Compose](https://docs.docker.com/compose/install/) V2 or later
-
-:::note
-
-This sample application has been tested with OpenJDK from Eclipse Temurin. ScalarDB itself, however, has been tested with JDK distributions from various vendors. For details about the requirements for ScalarDB, including compatible JDK distributions, please see [Requirements](./requirements.mdx).
-
-:::
 
 ## Clone the ScalarDB samples repository
 
@@ -141,6 +137,29 @@ For a list of databases that ScalarDB supports, see [Databases](requirements.mdx
     scalar.db.contact_points=jdbc:sqlserver://localhost:1433;encrypt=true;trustServerCertificate=true
     scalar.db.username=sa
     scalar.db.password=SqlServer22
+    ```
+  </TabItem>
+  <TabItem value="Spanner" label="Spanner">
+    <h3>Run Spanner locally</h3>
+
+    You can run Spanner Omni in Docker Compose by using the `docker-compose.yml` file in the `scalardb-samples/scalardb-kotlin-sample` directory.
+
+    To start Spanner Omni, run the following command:
+
+    ```console
+    docker compose up -d spanner spanner-init
+    ```
+
+    <h3>Configure ScalarDB</h3>
+
+    The **database.properties** file in the `scalardb-samples/scalardb-kotlin-sample` directory contains database configurations for ScalarDB. Please uncomment the properties for Spanner in the **database.properties** file so that the configuration looks as follows:
+
+    ```properties
+    # For Spanner
+    scalar.db.storage=jdbc
+    scalar.db.contact_points=jdbc:cloudspanner://localhost:15000/databases/test-db;isExperimentalHost=true;usePlainText=true
+    scalar.db.username=
+    scalar.db.password=
     ```
   </TabItem>
   <TabItem value="DynamoDB" label="DynamoDB">
@@ -260,6 +279,17 @@ The `--coordinator` option is specified because a table with `transaction` set t
 :::
   </TabItem>
   <TabItem value="SQL Server" label="SQL Server" default>
+    ```console
+    java -jar scalardb-schema-loader-<VERSION>.jar --config database.properties --schema-file schema.json --coordinator
+    ```
+
+:::note
+
+The `--coordinator` option is specified because a table with `transaction` set to `true` exists in the schema. For details about configuring and loading a schema, see [ScalarDB Schema Loader](schema-loader.mdx).
+
+:::
+  </TabItem>
+  <TabItem value="Spanner" label="Spanner">
     ```console
     java -jar scalardb-schema-loader-<VERSION>.jar --config database.properties --schema-file schema.json --coordinator
     ```

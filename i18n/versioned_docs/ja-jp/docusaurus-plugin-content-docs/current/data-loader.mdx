@@ -9,6 +9,7 @@ displayed_sidebar: docsJapanese
 # ScalarDB Data Loader
 
 import TranslationBanner from '/src/components/_translation-ja-jp.mdx';
+import JDKVersions from '/src/components/ja-jp/_prerequisites-jdk-versions.mdx';
 
 <TranslationBanner />
 
@@ -226,8 +227,7 @@ scalar.db.password=<PASSWORD>
 ScalarDB Cluster と Data Loader を使用する前に、以下が必要です:
 
 - 以下のいずれかの Java Development Kit (JDK):
-  - Oracle JDK: 8、11、17、または 21 (LTS バージョン)
-  - OpenJDK (Eclipse Temurin、Amazon Corretto、または Microsoft Build of OpenJDK): 8、11、17、または 21 (LTS バージョン)
+  <JDKVersions versionNumbers="8、11、17、または 21" />
 - ScalarDB Cluster の接続設定 (クラスターエンドポイントとポート) で設定された有効な **`scalardb.properties`** ファイル
 - 実行中の ScalarDB Cluster インスタンスとクラスターエンドポイントへのネットワークアクセス
 
@@ -237,8 +237,7 @@ ScalarDB Cluster と Data Loader を使用する前に、以下が必要です:
 データベースへの直接アクセスと Data Loader を使用する前に、以下が必要です:
 
 - 以下のいずれかの Java Development Kit (JDK):
-  - Oracle JDK: 8、11、17、または 21 (LTS バージョン)
-  - OpenJDK (Eclipse Temurin、Amazon Corretto、または Microsoft Build of OpenJDK): 8、11、17、または 21 (LTS バージョン)
+  <JDKVersions versionNumbers="8、11、17、または 21" />
 - データベース直接の接続設定で設定された有効な **`scalardb.properties`** ファイル
 - 読み取りおよび書き込み操作に対するデータベース権限 ([データベース権限要件](./requirements.mdx#データベース権限要件)を参照)
 

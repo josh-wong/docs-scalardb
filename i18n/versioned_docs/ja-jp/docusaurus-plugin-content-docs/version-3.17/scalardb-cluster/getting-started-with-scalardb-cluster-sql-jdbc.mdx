@@ -7,6 +7,7 @@ displayed_sidebar: docsJapanese
 # JDBC 経由の ScalarDB Cluster SQL をはじめよう
 
 import TranslationBanner from '/src/components/_translation-ja-jp.mdx';
+import JDKVersions from '/src/components/ja-jp/_prerequisites-jdk-versions.mdx';
 
 <TranslationBanner />
 
@@ -14,15 +15,10 @@ import TranslationBanner from '/src/components/_translation-ja-jp.mdx';
 
 ## このサンプルアプリケーションの前提条件
 
-- [Eclipse Temurin](https://adoptium.net/temurin/releases/) の OpenJDK LTS バージョン (8、11、17、または 21)
+- 以下のいずれかの Java Development Kit (JDK):
+  <JDKVersions versionNumbers="8、11、17、または 21" />
 - Kubernetes クラスターで実行されている ScalarDB Cluster
   - [ScalarDB Cluster をローカルにデプロイする方法](setup-scalardb-cluster-on-kubernetes-by-using-helm-chart.mdx) の手順に従ってデプロイした Kubernetes クラスターで ScalarDB Cluster が実行されていることを前提としています。
-
-:::note
-
-このサンプルアプリケーションは、Eclipse Temurin の OpenJDK でテストされています。ただし、ScalarDB 自体は、さまざまなベンダーの JDK ディストリビューションでテストされています。互換性のある JDK ディストリビューションを含む ScalarDB の要件の詳細については、[要件](../requirements.mdx)を参照してください。
-
-:::
 
 ## サンプルアプリケーション
 

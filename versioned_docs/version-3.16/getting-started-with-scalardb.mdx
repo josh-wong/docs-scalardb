@@ -10,6 +10,7 @@ displayed_sidebar: docsEnglish
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
+import JDKVersions from '/src/components/en-us/_prerequisites-jdk-versions.mdx';
 
 This getting started tutorial explains how to configure your preferred database in ScalarDB and illustrates the process of creating a sample e-commerce application, where items can be ordered and paid for with a credit card by using ScalarDB. The sample e-commerce application shows how users can order and pay for items by using a line of credit.
 
@@ -21,14 +22,9 @@ Since the focus of the sample application is to demonstrate using ScalarDB, appl
 
 ## Prerequisites for this sample application
 
-- OpenJDK LTS version (8, 11, 17, or 21) from [Eclipse Temurin](https://adoptium.net/temurin/releases/)
+- One of the following Java Development Kits (JDKs):
+  <JDKVersions versionNumbers="8, 11, 17, or 21" />
 - [Docker](https://www.docker.com/get-started/) 20.10 or later with [Docker Compose](https://docs.docker.com/compose/install/) V2 or later
-
-:::note
-
-This sample application has been tested with OpenJDK from Eclipse Temurin. ScalarDB itself, however, has been tested with JDK distributions from various vendors. For details about the requirements for ScalarDB, including compatible JDK distributions, please see [Requirements](./requirements.mdx).
-
-:::
 
 ## Clone the ScalarDB samples repository
 

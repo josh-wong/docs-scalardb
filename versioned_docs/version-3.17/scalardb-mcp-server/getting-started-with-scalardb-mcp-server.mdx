@@ -10,6 +10,7 @@ displayed_sidebar: docsEnglish
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
+import JDKVersions from '/src/components/en-us/_prerequisites-jdk-versions.mdx';
 
 ScalarDB MCP Server is a [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) implementation that enables LLMs to access and manage your data through ScalarDB. By leveraging LLMs, you can use natural language to search and update across multiple, potentially siloed, databases.
 
@@ -111,9 +112,8 @@ Follow these steps to set up ScalarDB MCP Server.
 
 Ensure you have the following:
 
-- (For JAR distribution) Java Runtime Environment:
-  - Oracle JDK: 17 or 21
-  - OpenJDK (Eclipse Temurin, Amazon Corretto, or Microsoft Build of OpenJDK): 17 or 21
+- (For JAR distribution) One of the following Java Development Kits (JDKs):
+  <JDKVersions versionNumbers="17 or 21" />
 - (For Docker distribution) Docker 20.10 or later
 - (For this tutorial's examples) Cassandra and MySQL databases must be running
 - (For SQL mode) ScalarDB Cluster must also be running

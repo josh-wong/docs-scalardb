@@ -18,6 +18,23 @@ This page includes a list of release notes for ScalarDB 3.18.
 
 This release includes a lot of enhancements, improvements, security issue fixes, and bug fixes.
 
+:::warning Backward-incompatible changes
+
+- **JDBC connection pool migrated from Apache Commons DBCP2 to HikariCP:**
+  - The following configuration properties are no longer supported. They are ignored, with a warning logged, if set:
+    - `scalar.db.jdbc.connection_pool.max_idle`
+    - `scalar.db.jdbc.table_metadata.connection_pool.max_idle`
+    - `scalar.db.jdbc.admin.connection_pool.max_idle`
+    - `scalar.db.jdbc.prepared_statements_pool.enabled`
+    - `scalar.db.jdbc.prepared_statements_pool.max_open`
+  - Prepared statement pooling is no longer available because HikariCP has no equivalent feature.
+  - Connection pool default behavior follows HikariCP rather than DBCP2, which may change runtime behavior even without configuration changes (for example, connection acquisition timeout and idle eviction).
+- **Existing tables require `repairTable()` to create the new before-image secondary index.** Index-based `Get`, `Scan`, and `ScanAll` in Consensus Commit now rely on a companion `before_<col>` index. Until you run `repairTable()` on each existing table, ScalarDB logs a warning at startup and index-based reads fall back to the previous behavior, which may miss records whose indexed column is being concurrently updated. The configuration `scalar.db.consensus_commit.index.eventually_consistent_read.enabled` is provided as an opt-out but is not recommended for new workloads.
+- **MySQL Connector/J replaced with MariaDB Connector/J.** SSL is no longer enabled by default. If you connect to MySQL 8.0 or later with `caching_sha2_password` authentication, add `sslMode=REQUIRED` or `allowPublicKeyRetrieval=true` to your JDBC URL. No action is required for `jdbc:mysql://` URLs because ScalarDB automatically appends `permitMysqlScheme` for compatibility.
+- **`BigIntColumn.MAX_VALUE` and `BigIntColumn.MIN_VALUE` constants have been removed.** Code that referenced them must use `Long.MAX_VALUE` and `Long.MIN_VALUE` instead.
+
+:::
+
 ### Community edition
 
 #### Enhancements
@@ -79,7 +96,7 @@ This release includes a lot of enhancements, improvements, security issue fixes,
 - Added `Metadata.getRole(roleName)`
 - Added support for Spring Boot 4 in Spring Data JDBC for ScalarDB.
 - Added support for extending `AbstractJdbcConfiguration` for custom bean configuration in Spring Data JDBC for ScalarDB.
-- Changed the `PreparedStatement` API to use `bind()` methods that return a `BoundStatement` for parameter binding, instead of directly setting values on `PreparedStatement`. Note that this is a breaking change, and users may need to update their source code accordingly.
+- Changed the `PreparedStatement` API to use `bind()` methods that return a `BoundStatement` for parameter binding, instead of directly setting values on `PreparedStatement`.
 - Added `executeBatch` API to execute multiple statements in a single call, with support in the core SQL API, direct-mode, and JDBC driver.
 - Added support for BLOB literals using X'hex' syntax in SQL statements.
 - Added support for AuthenticationMethod in `CREATE/ALTER USER` and `SHOW USERS`

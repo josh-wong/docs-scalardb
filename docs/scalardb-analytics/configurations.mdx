@@ -90,6 +90,78 @@ Configure your ScalarDB Analytics license.
 - **Field:** `scalar.db.analytics.server.licensing.license_check_cert_path`
 - **Description:** Path to license verification certificate file. Either this or `license_check_cert_pem` must be specified.
 
+### Authentication and authorization configurations
+
+Configure authentication and authorization for the ScalarDB Analytics server. For more details, see [Authenticate and Authorize Users in ScalarDB Analytics](authentication-and-authorization.mdx).
+
+#### `auth.enabled`
+
+- **Field:** `scalar.db.analytics.server.auth.enabled`
+- **Description:** Whether authentication and authorization are enabled.
+- **Default value:** `false`
+
+#### `auth.initial_admin_username`
+
+- **Field:** `scalar.db.analytics.server.auth.initial_admin_username`
+- **Description:** The username of the initial admin user who will be assigned the SUPERADMIN role when no users have already been assigned to the SUPERADMIN role.
+
+#### `auth.password.backend`
+
+- **Field:** `scalar.db.analytics.server.auth.password.backend`
+- **Description:** The authentication backend to use (`internal` or `scalardb-cluster`).
+- **Default value:** `internal`
+
+#### `auth.password.token_ttl_seconds`
+
+- **Field:** `scalar.db.analytics.server.auth.password.token_ttl_seconds`
+- **Description:** The time-to-live (TTL) of access tokens in seconds.
+- **Default value:** `86400` (24 hours)
+
+#### `auth.password.internal.initial_admin_password`
+
+- **Field:** `scalar.db.analytics.server.auth.password.internal.initial_admin_password`
+- **Description:** The initial password for the admin user. Only used when `auth.password.backend` is `internal`.
+
+#### `auth.password.scalardb_cluster.host`
+
+- **Field:** `scalar.db.analytics.server.auth.password.scalardb_cluster.host`
+- **Description:** The hostname or IP address of the ScalarDB Cluster instance. Required when `auth.password.backend` is `scalardb-cluster`.
+- **Default value:** `localhost`
+
+#### `auth.password.scalardb_cluster.port`
+
+- **Field:** `scalar.db.analytics.server.auth.password.scalardb_cluster.port`
+- **Description:** The port number of the ScalarDB Cluster instance. Required when `auth.password.backend` is `scalardb-cluster`.
+- **Default value:** `60053`
+
+#### `auth.password.scalardb_cluster.deadline_millis`
+
+- **Field:** `scalar.db.analytics.server.auth.password.scalardb_cluster.deadline_millis`
+- **Description:** The gRPC deadline in milliseconds for authentication requests to ScalarDB Cluster.
+- **Default value:** `5000`
+
+#### `auth.password.scalardb_cluster.acl_delegation`
+
+- **Field:** `scalar.db.analytics.server.auth.password.scalardb_cluster.acl_delegation`
+- **Description:** Whether to delegate namespace-level and table-level authorization for ScalarDB data sources to ScalarDB Cluster. For details, see [Authenticate and Authorize Users in ScalarDB Analytics](authentication-and-authorization.mdx#scalardb-authorization-delegation).
+- **Default value:** `false`
+
+#### `auth.password.scalardb_cluster.tls.enabled`
+
+- **Field:** `scalar.db.analytics.server.auth.password.scalardb_cluster.tls.enabled`
+- **Description:** Whether to enable TLS for the connection to ScalarDB Cluster.
+- **Default value:** `false`
+
+#### `auth.password.scalardb_cluster.tls.ca_root_cert_path`
+
+- **Field:** `scalar.db.analytics.server.auth.password.scalardb_cluster.tls.ca_root_cert_path`
+- **Description:** Path to the CA root certificate file for verifying the ScalarDB Cluster server certificate.
+
+#### `auth.password.scalardb_cluster.tls.override_authority`
+
+- **Field:** `scalar.db.analytics.server.auth.password.scalardb_cluster.tls.override_authority`
+- **Description:** Override the server authority for TLS verification of the ScalarDB Cluster connection.
+
 ### Metering storage configuration
 
 Configure storage for metering data.
@@ -153,6 +225,31 @@ The following is a list of configurations for connecting to the server.
 - **Field:** `scalar.db.analytics.client.server.metering.port`
 - **Description:** Port number for the metering service.
 - **Default value:** `11052`
+
+### Authentication configuration
+
+The following is a list of configurations for authentication. For more details, see [Authenticate and Authorize Users in ScalarDB Analytics](authentication-and-authorization.mdx).
+
+#### `auth.username`
+
+- **Field:** `scalar.db.analytics.client.auth.username`
+- **Description:** The username for authenticating with the ScalarDB Analytics server.
+
+#### `auth.password`
+
+- **Field:** `scalar.db.analytics.client.auth.password`
+- **Description:** The password for authenticating with the ScalarDB Analytics server.
+
+:::tip
+
+You can also set the credentials by using environment variables, which take precedence over the configuration file properties.
+
+| Environment variable                          | Description                    |
+|:----------------------------------------------|:-------------------------------|
+| `SCALAR_DB_ANALYTICS_CLIENT_AUTH_USERNAME`     | The username for authentication. |
+| `SCALAR_DB_ANALYTICS_CLIENT_AUTH_PASSWORD`     | The password for authentication. |
+
+:::
 
 ### TLS configuration
 
@@ -250,6 +347,20 @@ The following is a list of configurations for TLS/SSL.
 
 Replace `<catalog-name>` with your chosen catalog name (for example, `analytics`).
 
+### Authentication configurations
+
+The following is a list of configurations for authentication when connecting to a server with authentication enabled. For more details, see [Authenticate and Authorize Users in ScalarDB Analytics](authentication-and-authorization.mdx).
+
+#### `spark.sql.catalog.<catalog-name>.server.auth.username`
+
+- **Field:** `spark.sql.catalog.<catalog-name>.server.auth.username`
+- **Description:** The username for authenticating the Spark application with the ScalarDB Analytics server.
+
+#### `spark.sql.catalog.<catalog-name>.server.auth.password`
+
+- **Field:** `spark.sql.catalog.<catalog-name>.server.auth.password`
+- **Description:** The password for authenticating the Spark application with the ScalarDB Analytics server.
+
 ## Configuration examples
 
 This section provides some configuration examples.
@@ -288,6 +399,81 @@ spark.jars.packages                         com.scalar-labs:scalardb-analytics-s
 spark.extraListeners                        com.scalar.db.analytics.spark.metering.ScalarDbAnalyticsListener
 spark.sql.catalog.analytics                 com.scalar.db.analytics.spark.ScalarDbAnalyticsCatalog
 spark.sql.catalog.analytics.server.host     localhost
+```
+
+### Configuration with authentication enabled
+
+The following are examples of configurations with authentication and authorization enabled.
+
+#### Server configuration (`scalardb-analytics-server.properties`)
+
+```properties
+# Metadata database
+scalar.db.analytics.server.db.contact_points=jdbc:postgresql://localhost:5432/scalardb_analytics
+scalar.db.analytics.server.db.username=dev_user
+scalar.db.analytics.server.db.password=dev_password
+
+# Authentication and authorization
+scalar.db.analytics.server.auth.enabled=true
+scalar.db.analytics.server.auth.initial_admin_username=<YOUR_ADMIN_USERNAME>
+scalar.db.analytics.server.auth.password.internal.initial_admin_password=<YOUR_ADMIN_PASSWORD>
+
+# TLS (required when authentication is enabled)
+scalar.db.analytics.server.tls.enabled=true
+scalar.db.analytics.server.tls.cert_chain_path=/path/to/server.crt
+scalar.db.analytics.server.tls.private_key_path=/path/to/server.key
+
+# License
+scalar.db.analytics.server.licensing.license_key=YOUR_DEV_LICENSE_KEY
+scalar.db.analytics.server.licensing.license_check_cert_path=/path/to/license_cert.pem
+
+# Metering storage (filesystem for development)
+scalar.db.analytics.server.metering.storage.provider=filesystem
+scalar.db.analytics.server.metering.storage.path=/tmp/scalardb-analytics-metering
+```
+
+#### CLI client configuration (`client.properties`)
+
+```properties
+scalar.db.analytics.client.server.host=localhost
+scalar.db.analytics.client.server.tls.enabled=true
+scalar.db.analytics.client.server.tls.ca_root_cert_path=/path/to/ca.crt
+scalar.db.analytics.client.auth.username=<YOUR_ADMIN_USERNAME>
+scalar.db.analytics.client.auth.password=<YOUR_ADMIN_PASSWORD>
+```
+
+### Configuration with ScalarDB Cluster authentication backend
+
+The following is an example of a server configuration that uses ScalarDB Cluster as the authentication backend with ACL delegation enabled.
+
+#### Server configuration (`scalardb-analytics-server.properties`)
+
+```properties
+# Metadata database
+scalar.db.analytics.server.db.contact_points=jdbc:postgresql://db.internal:5432/scalardb_analytics
+scalar.db.analytics.server.db.username=analytics_user
+scalar.db.analytics.server.db.password=your_secure_password
+
+# Authentication and authorization
+scalar.db.analytics.server.auth.enabled=true
+scalar.db.analytics.server.auth.initial_admin_username=admin
+scalar.db.analytics.server.auth.password.backend=scalardb-cluster
+scalar.db.analytics.server.auth.password.scalardb_cluster.host=cluster.example.com
+scalar.db.analytics.server.auth.password.scalardb_cluster.port=60053
+scalar.db.analytics.server.auth.password.scalardb_cluster.acl_delegation=true
+
+# TLS (required when authentication is enabled)
+scalar.db.analytics.server.tls.enabled=true
+scalar.db.analytics.server.tls.cert_chain_path=/path/to/server.crt
+scalar.db.analytics.server.tls.private_key_path=/path/to/server.key
+
+# License
+scalar.db.analytics.server.licensing.license_key=YOUR_LICENSE_KEY
+scalar.db.analytics.server.licensing.license_check_cert_path=/path/to/license_cert.pem
+
+# Metering storage
+scalar.db.analytics.server.metering.storage.provider=filesystem
+scalar.db.analytics.server.metering.storage.path=/tmp/scalardb-analytics-metering
 ```
 
 ### Production configuration with TLS
@@ -344,6 +530,7 @@ spark.sql.catalog.analytics.server.tls.ca_root_cert_path /path/to/cert.pem
 
 ## Next steps
 
+- [Authenticate and Authorize Users in ScalarDB Analytics](authentication-and-authorization.mdx) - Set up authentication and authorization
 - [Create a ScalarDB Analytics Catalog](./create-scalardb-analytics-catalog.mdx) - Learn how to create catalogs and add data sources
 - [Run Analytical Queries Through ScalarDB Analytics](run-analytical-queries.mdx) - Start running queries with your configuration
 - [Deploy ScalarDB Analytics in Public Cloud Environments](deployment.mdx) - Deploy ScalarDB Analytics in production

@@ -18,6 +18,13 @@ This page includes a list of release notes for ScalarDB 3.16.
 
 This release includes improvements and bug fixes.
 
+:::warning Backward-incompatible changes
+
+- **Existing tables require `repairTable()` to create the new before-image secondary index.** Index-based `Get`, `Scan`, and `ScanAll` in Consensus Commit now rely on a companion `before_<col>` index. Until you run `repairTable()` on each existing table, ScalarDB logs a warning at startup and index-based reads fall back to the previous behavior, which may miss records whose indexed column is being concurrently updated. The configuration `scalar.db.consensus_commit.index.eventually_consistent_read.enabled` is provided as an opt-out but is not recommended for new workloads.
+- **MySQL Connector/J replaced with MariaDB Connector/J.** SSL is no longer enabled by default. If you connect to MySQL 8.0 or later with `caching_sha2_password` authentication, add `sslMode=REQUIRED` or `allowPublicKeyRetrieval=true` to your JDBC URL. No action is required for `jdbc:mysql://` URLs because ScalarDB automatically appends `permitMysqlScheme` for compatibility.
+
+:::
+
 ### Community edition
 
 #### Improvements
@@ -122,6 +129,12 @@ This release mainly consists of several minor bug fixes and small improvements.
 ### Summary
 
 This release includes several bug fixes and vulnerability fixes.
+
+:::warning Backward-incompatible changes
+
+- **`Get` and `Scan` operations using a secondary index under the SERIALIZABLE isolation level now throw `IllegalArgumentException`** because such operations cannot guarantee the strict consistency that SERIALIZABLE requires. To restore SERIALIZABLE support for index-based reads, upgrade to 3.16.5 or later, which adds it back via a companion before-image secondary index. Otherwise, switch to a non-SERIALIZABLE isolation level (reads become eventually consistent and may return slightly stale data) or rewrite the operation to use the primary key.
+
+:::
 
 ### Community edition
 

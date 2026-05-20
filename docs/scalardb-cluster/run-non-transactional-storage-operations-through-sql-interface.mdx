@@ -140,6 +140,29 @@ For a list of databases that ScalarDB supports, see [Databases](../requirements.
     scalar.db.password=SqlServer22
     ```
   </TabItem>
+  <TabItem value="Spanner" label="Spanner">
+    <h3>Run Spanner locally</h3>
+
+    You can run Spanner Omni in Docker Compose by using the `docker-compose.yaml` file in the `scalardb-samples/scalardb-cluster-standalone-mode` directory.
+
+    To start Spanner Omni, run the following command:
+
+    ```console
+    docker compose up -d spanner spanner-init
+    ```
+
+    <h3>Configure ScalarDB Cluster</h3>
+
+    The **scalardb-cluster-node.properties** file in the `scalardb-samples/scalardb-cluster-standalone-mode` directory contains database configurations for ScalarDB Cluster. Please uncomment the properties for Spanner in the **scalardb-cluster-node.properties** file so that the configuration looks as follows:
+
+    ```properties
+    # For Spanner
+    scalar.db.storage=jdbc
+    scalar.db.contact_points=jdbc:cloudspanner://spanner-1:15000/databases/test-db;isExperimentalHost=true;usePlainText=true
+    scalar.db.username=
+    scalar.db.password=
+    ```
+  </TabItem>
   <TabItem value="DynamoDB" label="DynamoDB">
     <h3>Run Amazon DynamoDB Local</h3>
 

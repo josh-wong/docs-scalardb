@@ -1464,6 +1464,11 @@ const sidebars = {
               id: 'scalardb-samples/spring-data-microservice-transaction-sample/README',
               label: 'Spring Data JDBC によるマイクロサービストランザクション',
             },
+            {
+              type: 'doc',
+              id: 'scalardb-samples/microservice-transactions-sample-with-shared-cluster-with-jdbc/README',
+              label: 'JDBC を使用して共有クラスタでマイクロサービストランザクション',
+            },
           ],
         },
         {
