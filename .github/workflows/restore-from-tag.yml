@@ -44,15 +44,12 @@ jobs:
           fi
 
           # Get tag metadata
-          tag_date=$(git tag -l --format='%(creatordate)' "$tag_name")
           main_head_sha=$(git rev-parse HEAD)
 
           echo "tag_name=$tag_name" >> $GITHUB_OUTPUT
-          echo "tag_date=$tag_date" >> $GITHUB_OUTPUT
           echo "main_head_sha=$main_head_sha" >> $GITHUB_OUTPUT
 
           echo "✓ Tag validated: $tag_name"
-          echo "  Date: $tag_date"
 
   restore-and-deploy:
     needs: prepare-restore
