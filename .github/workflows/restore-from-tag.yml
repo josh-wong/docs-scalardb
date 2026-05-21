@@ -22,7 +22,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       tag_name: ${{ steps.resolve-tag.outputs.tag_name }}
-      tag_date: ${{ steps.resolve-tag.outputs.tag_date }}
       main_head_sha: ${{ steps.resolve-tag.outputs.main_head_sha }}
     steps:
       - name: Checkout main branch
